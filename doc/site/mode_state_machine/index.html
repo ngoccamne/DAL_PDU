@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Mode state machine - DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Mode state machine";
+        var mkdocs_page_input_path = "mode_state_machine.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../current_firmware/">Current firmware architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../code_architecture/">Code architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../scheduler_design/">Scheduler design</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../command_reference/">Current command reference</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../hardware_overview/">Hardware overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../software_requirements/">Software requirements</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../use_cases_commands/">Use cases, user stories & commands</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../modbus_implementation/">Modbus RTU implementation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../open_issues/">Open issues</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Mode state machine</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-modes">1. Modes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-transitions">2. Transitions</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-regulator-monitor">3. Regulator monitor</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-outputs">4. Outputs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-self-test">5. Self-test</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-led-indication">6. LED indication</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-console-and-modbus">7. Console and Modbus</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-known-limits">8. Known limits</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-open-question">9. Open question</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/versioning/">Versioning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/unit_tests/">Unit tests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Mode state machine</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="mode-state-machine">Mode state machine</h1>
+<p>This page describes the operating mode as implemented in <code>M0_App/app_mode.c</code> (2026-10-05). The mode is
+one of four: <strong>NORMAL</strong>, <strong>MANUAL</strong>, <strong>WARNING</strong>, and <strong>ERROR</strong>. The earlier four-state model (Standby,
+Running, ProtectedShutdown, SafeFault) is gone.</p>
+<h2 id="1-modes">1. Modes</h2>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th style="text-align: right;">Value</th>
+<th>Entered when</th>
+<th>Outputs (VOUT, TRANS)</th>
+<th>Commands</th>
+<th>Regulator monitored</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>NORMAL</strong></td>
+<td style="text-align: right;">0</td>
+<td>No error, and no manual request</td>
+<td>Allowed. Limits act.</td>
+<td>All</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>MANUAL</strong></td>
+<td style="text-align: right;">1</td>
+<td>Requested by command, from NORMAL, WARNING, or ERROR (revised 2026-10-15: outranks ERROR once requested)</td>
+<td>Allowed, including <code>trans on</code>/<code>tps55287 on</code>, regardless of a regulator/limit cause underneath. Limits log only.</td>
+<td>All</td>
+<td>No</td>
+</tr>
+<tr>
+<td><strong>WARNING</strong></td>
+<td style="text-align: right;">2</td>
+<td>The PAC1934 is unreadable, an I2C timeout is active, the VOUT setpoint readback mismatches, or Modbus link loss (<code>SRS-COM-045</code>)</td>
+<td>Allowed. Link loss by itself does not turn outputs off. Limits log only.</td>
+<td>All</td>
+<td>Yes</td>
+</tr>
+<tr>
+<td><strong>ERROR</strong></td>
+<td style="text-align: right;">3</td>
+<td>The regulator (U5) does not respond when TRANS is enabled, or it faults or stops responding while TRANS is on; a limit trips in NORMAL; or an eFuse fault (PC4 for 12V TRANS, PC0 for 12V_MCU) reads continuously active for 50 ms (revised 2026-10-16, was WARNING — see <code>SRS-PROT-020</code>)</td>
+<td>Both off, unless MANUAL has since been requested</td>
+<td>All</td>
+<td>No</td>
+</tr>
+</tbody>
+</table>
+<p>The mode is <strong>derived</strong> on each call to <code>AppMode_Get()</code>. The first matching rule wins:</p>
+<ol>
+<li>MANUAL, if a manual request is active (revised 2026-10-15: checked before ERROR, so a manual
+   request always wins — see OI-34).</li>
+<li>ERROR, if the regulator error flag, the limit error flag, or a latched eFuse fault is set
+   (revised 2026-10-16: the eFuse latch moved here from WARNING — see OI-35).</li>
+<li>WARNING, if the PAC1934 is unreadable, an I2C timeout is active, the setpoint readback
+   mismatches, or Modbus link loss is active.</li>
+<li>NORMAL otherwise.</li>
+</ol>
+<p>Every mode accepts all commands and responds. ERROR's causes (regulator, limit, and the eFuse latch) and
+MANUAL are independent flags: requesting MANUAL does not clear any of them, it only changes which one
+<code>AppMode_Get()</code> reports and which gates (like <code>AppPower_SetTrans</code>'s ERROR check, and the eFuse
+auto-shutdown in <code>AppPower_ShutdownOnFault</code>) are satisfied. A healthy <code>mode normal</code> request clears
+regulator/limit causes; only <code>fault clear</code> removes an eFuse latch. Leaving MANUAL still requires
+an explicit <code>mode normal</code> request after clearing the latch. The regulator is not watched
+automatically in either MANUAL or ERROR.</p>
+<h2 id="2-transitions">2. Transitions</h2>
+<table>
+<thead>
+<tr>
+<th>From</th>
+<th>To</th>
+<th>Trigger</th>
+<th>Actions</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>TRANS enable attempt</td>
+<td>ERROR</td>
+<td>Regulator not detected once TRANS is powered</td>
+<td>Both outputs off; TRANS is turned back off</td>
+</tr>
+<tr>
+<td>Startup</td>
+<td>WARNING</td>
+<td>PAC1934 not detected</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Startup</td>
+<td>ERROR</td>
+<td>Limit ERROR flag stored from an earlier trip</td>
+<td>Both outputs off until a healthy <code>mode normal</code> request</td>
+</tr>
+<tr>
+<td>Startup</td>
+<td>NORMAL</td>
+<td>No error</td>
+<td>None</td>
+</tr>
+<tr>
+<td>NORMAL or WARNING</td>
+<td>ERROR</td>
+<td>Regulator status fault (SCP, OCP, or OVP), or regulator stops responding</td>
+<td>Both outputs off</td>
+</tr>
+<tr>
+<td>NORMAL</td>
+<td>ERROR</td>
+<td>Over-temperature or overcurrent limit exceeded for the required samples (<code>PROT-021</code>, <code>PROT-022</code>)</td>
+<td>Both outputs off. WARNING event logged.</td>
+</tr>
+<tr>
+<td>MANUAL, WARNING, or ERROR</td>
+<td>(no change)</td>
+<td>Over-temperature or overcurrent limit exceeded</td>
+<td>WARNING event logged. Outputs unchanged.</td>
+</tr>
+<tr>
+<td>NORMAL or WARNING</td>
+<td>ERROR</td>
+<td>PC4 (while TRANS is on) or PC0 reads continuously active for 50 ms (revised 2026-10-16, was WARNING)</td>
+<td>Latched fault: outputs off (unless in MANUAL — see below), latch in EEPROM</td>
+</tr>
+<tr>
+<td>NORMAL or WARNING</td>
+<td>WARNING</td>
+<td>PAC1934 unreadable</td>
+<td>None</td>
+</tr>
+<tr>
+<td>NORMAL or WARNING</td>
+<td>WARNING</td>
+<td>No valid Modbus request for the configured timeout, after at least one was seen (<code>SRS-COM-045</code>)</td>
+<td>None. Outputs are not turned off by this.</td>
+</tr>
+<tr>
+<td>WARNING</td>
+<td>NORMAL</td>
+<td>Cause clears (PAC1934 readable, or a new valid Modbus request arrives)</td>
+<td>None</td>
+</tr>
+<tr>
+<td>NORMAL, WARNING, or ERROR</td>
+<td>MANUAL</td>
+<td><code>mode manual</code>, or Modbus holding register <code>40030</code> = 1 (revised 2026-10-15: reachable from ERROR too)</td>
+<td>None. The regulator/limit/eFuse-latch cause, if any, is untouched.</td>
+</tr>
+<tr>
+<td>MANUAL or ERROR</td>
+<td>NORMAL or WARNING</td>
+<td><code>mode normal</code>, or Modbus holding register <code>40030</code> = 0</td>
+<td>Checks regulator and limits; clears those causes only when healthy. Refused while an eFuse fault is latched.</td>
+</tr>
+<tr>
+<td>ERROR (eFuse latch)</td>
+<td>NORMAL or WARNING</td>
+<td><code>fault clear</code>, refused while the live pin is still active</td>
+<td>Clears only the eFuse cause.</td>
+</tr>
+</tbody>
+</table>
+<p>A confirmed eFuse fault behaves like any other ERROR cause for mode purposes (MANUAL still outranks it), but only <code>fault clear</code> removes its latch.</p>
+<p>Requests to enter NORMAL while a regulator/limit health check fails or an eFuse fault remains latched are refused. The console prints <code>MODE refused: error</code>, and Modbus returns an
+exception. Requests to enter MANUAL
+are never refused for this reason (revised 2026-10-15, OI-34).</p>
+<h2 id="3-regulator-monitor">3. Regulator monitor</h2>
+<p>The one-second rail monitor (<code>AppPowerMonitor_Update</code>) reads the TPS55287 status register while the mode is
+NORMAL or WARNING <strong>and TRANS is on</strong>. The TPS55287 (U5) sits behind the TRANS eFuse and is unpowered whenever
+TRANS is off, so the monitor does not poll it then — polling an unpowered chip would otherwise read back as a
+failure and set ERROR for no reason. Any SCP, OCP, or OVP flag, or a failed read while TRANS is on, sets the
+ERROR flag. The flags are cleared by the read, so the monitor acts on the value it has just read. ERROR is
+cleared only by a healthy normal-mode request.</p>
+<p>The same reasoning applies to enabling TRANS: <code>AppPower_SetTrans(true)</code> and <code>AppPower_EnsureRegulatorOn()</code>
+(used by <code>tps55287 set</code>/<code>on</code> and the equivalent Modbus writes) probe the TPS55287 right after powering TRANS
+on, and set the ERROR flag (turning TRANS back off) if it does not answer. Right after that probe, they also
+write register <code>0x04</code> to external feedback (<code>0x80</code>) and read it back to confirm, since the chip resets to
+internal feedback every time its <code>EN</code>/UVLO drops — which happens on every TRANS power-cycle. This board wires
+an external divider (R22/R30, ratio ≈ 0.0997) rather than using the chip's internal ratio, so a failed
+readback there sets ERROR the same way a failed presence probe does.</p>
+<p><code>mode normal</code> probes the regulator through <code>AppPower_ProbeRegulator()</code> when a regulator or limit ERROR is set, so it also works from a
+cold boot with TRANS off: it powers TRANS on just long enough to check (unless the eFuse fault is latched, in
+which case it refuses without touching TRANS), then restores TRANS to whatever it was before, whatever the
+result. That lets <code>mode normal</code> clear a persisted <strong>limit</strong> ERROR too, not only a regulator ERROR —
+<code>AppMode_Retry</code> requires both causes to be clear before it drops either one, so without this probe a stale
+limit ERROR left over from before a reset could never be cleared while TRANS was off.</p>
+<h2 id="4-outputs">4. Outputs</h2>
+<ul>
+<li><strong>ERROR</strong>: <code>AppPower_Update</code> turns VOUT off, then TRANS off, on every 6 ms pass while TRANS is on — unless
+  MANUAL has been requested since, in which case outputs stay under manual control. TRANS cannot be enabled
+  from ERROR itself (only from MANUAL, which outranks it).</li>
+<li><strong>Link timeout</strong> (<code>SRS-COM-045</code>, revised 2026-10-15): if no Modbus request has arrived for the configured
+  timeout (default 5 s) after the first one, this raises the <code>link</code> WARNING cause in <code>mode get</code>. It no longer
+  turns VOUT or TRANS off by itself, and is not persisted (plain RAM state, cleared the instant a new valid
+  Modbus request arrives). Previously this turned outputs off without changing the mode; that was reversed
+  because in practice it was tripping during console-only bench use with no Modbus traffic at all, not an
+  actual lost link in the field — see OI-03.</li>
+<li><strong>Latched eFuse fault</strong> (revised 2026-10-16, <code>SRS-PROT-020</code>): PC4 (while TRANS is on) or PC0 must read
+  continuously active for 50 ms before it is treated as real — a brief read, for example from inrush when
+  TRANS switches on, resets the timer and never latches. Once confirmed, it is ERROR, not WARNING, and stays
+  latched until <code>fault clear</code>, regardless of mode — enabling is refused by the latched record, checked in
+  <code>AppPower_SetTrans</code>. While in MANUAL, a confirmed fault is still latched and reported (<code>fault get</code>, and
+  <code>mode get</code>'s <code>latch=</code>), but <code>AppPower_ShutdownOnFault</code> no longer forces outputs off for it, matching every
+  other ERROR cause once MANUAL has been requested.
+  The live PC4/PC0 pins themselves are no longer checked at the moment of <em>enabling</em> (decided 2026-10-15): a
+  fault that is live but not yet confirmed does not refuse a <code>trans on</code>/<code>tps55287 on</code> attempt by itself. The
+  6 ms <code>AppPower_Update</code> poll still reads the live pins every pass and, once the 50 ms debounce confirms a
+  real fault, latches it and shuts TRANS back off (outside MANUAL) — so a fault that is still present gets
+  caught and the output disabled within about 50 ms regardless; this only removes a synchronous pre-check
+  that duplicated that poll on the same tick as the enable attempt.</li>
+<li><strong>Over-temperature and overcurrent</strong> (<code>PROT-021</code>, <code>PROT-022</code>): checked every second in every mode. Temperature
+  needs two consecutive samples at or above the limit. Each current needs three consecutive samples above it.</li>
+<li>Every trip is logged once as a WARNING event in the 24C04, whatever the mode. A trip is logged again only
+    after the value has returned under the limit.</li>
+<li>In NORMAL, the trip also turns VOUT and then TRANS off and sets the limit ERROR.</li>
+<li>In MANUAL, WARNING, and ERROR, the trip only logs. Outputs are not changed.</li>
+<li><strong>Limit ERROR end</strong>: <code>mode normal</code> clears it once the regulator responds and every limit is back in range.
+  The flag is stored in internal EEPROM, so the ERROR survives a reset until that request succeeds.
+  The health check does not leave an output on.</li>
+</ul>
+<h2 id="5-self-test">5. Self-test</h2>
+<p>The startup self-test runs once in <code>APP_Initialize</code>, before the scheduler starts. The TPS55287 (U5) sits
+behind the TRANS eFuse, which stays off at boot by design, so it cannot be probed here. It is not part of
+the startup self-test: it is checked on demand instead, the first time TRANS is enabled (see
+<a href="#3-regulator-monitor">section 3</a>).</p>
+<table>
+<thead>
+<tr>
+<th>Device</th>
+<th>Result</th>
+<th>Effect</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>U10 PAC1934</td>
+<td>Missing</td>
+<td>WARNING</td>
+</tr>
+<tr>
+<td>U14 24C04</td>
+<td>Missing</td>
+<td>Recorded only. Shown by <code>mode</code> as <code>eeprom=1</code>.</td>
+</tr>
+</tbody>
+</table>
+<p>The self-test is synchronous, so it is never visible as a mode.</p>
+<h2 id="6-led-indication">6. LED indication</h2>
+<p>The heartbeat LED (PA3) shows the mode. Patterns are in <code>app_heartbeat.c</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Mode</th>
+<th>Pattern</th>
+<th style="text-align: right;">ON / OFF (ms)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>NORMAL</td>
+<td>Slow heartbeat</td>
+<td style="text-align: right;">1000 / 1000 (configurable with the <code>led</code> command and Modbus <code>40020</code>–<code>40023</code>)</td>
+</tr>
+<tr>
+<td>MANUAL</td>
+<td>Medium blink</td>
+<td style="text-align: right;">200 / 800</td>
+</tr>
+<tr>
+<td>WARNING</td>
+<td>Double flash</td>
+<td style="text-align: right;">100 / 100, then 100 / 1000</td>
+</tr>
+<tr>
+<td>ERROR</td>
+<td>Rapid blink</td>
+<td style="text-align: right;">50 / 50</td>
+</tr>
+</tbody>
+</table>
+<p>The heartbeat enable (Modbus coil <code>00010</code>, <code>led</code> command) applies to the NORMAL pattern only. Faults always show.</p>
+<h2 id="7-console-and-modbus">7. Console and Modbus</h2>
+<table>
+<thead>
+<tr>
+<th>Interface</th>
+<th>Operation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code> or <code>mode get</code></td>
+<td>Prints the mode, then <code>CAUSES regulator=0 pac1934=0 eeprom=0 latch=0 limit=0 setpoint=0 bus=0 link=0</code>. A 1 means that cause is active. <code>regulator</code>, <code>limit</code>, and <code>latch</code> are ERROR causes; <code>pac1934</code>, <code>setpoint</code>, <code>bus</code>, and <code>link</code> are WARNING causes (<code>eeprom</code> only records itself, per section 5). <code>latch</code> moved from WARNING to ERROR 2026-10-16 (<code>SRS-PROT-020</code>).</td>
+</tr>
+<tr>
+<td><code>mode normal</code></td>
+<td>Checks the regulator and limits when an ERROR cause is set, clears healthy causes, then requests NORMAL. Refused if the check fails or an eFuse fault is latched.</td>
+</tr>
+<tr>
+<td><code>mode manual</code></td>
+<td>Requests MANUAL. Never refused for being in ERROR (revised 2026-10-15, OI-34) — the regulator/limit/latch cause, if any, is untouched underneath.</td>
+</tr>
+<tr>
+<td><code>limit</code>, <code>limit temp &lt;tenths C&gt;</code>, <code>limit vout &lt;mA&gt;</code>, <code>limit trans &lt;mA&gt;</code></td>
+<td>Shows or sets the limits. Stored in internal EEPROM.</td>
+</tr>
+<tr>
+<td><code>config</code>, <code>config set address</code>, <code>config set baud</code>, <code>config set timeout</code>, <code>config_reset confirm</code></td>
+<td>Shows or sets the Modbus address, baud, and communications timeout, or restores all settings to the defaults. See <a href="../command_reference/#configuration">Command reference</a>.</td>
+</tr>
+<tr>
+<td><code>event get</code></td>
+<td>Lists the events in the 24C04 ring, with the clock time.</td>
+</tr>
+<tr>
+<td>Modbus input <code>30022</code></td>
+<td>Mode value: 0 NORMAL, 1 MANUAL, 2 WARNING, 3 ERROR.</td>
+</tr>
+<tr>
+<td>Modbus holding <code>40030</code></td>
+<td>Read: mode value. Write 0 requests NORMAL, 1 requests MANUAL.</td>
+</tr>
+<tr>
+<td>Modbus holding <code>40031</code>–<code>40033</code></td>
+<td>Limits: temperature in tenths of a degree C (signed), VOUT in mA, +5_TRANS in mA. A refused write returns an exception.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-known-limits">8. Known limits</h2>
+<ul>
+<li>The limit defaults are 85.0 °C for two samples, and 1000 mA for three samples on VOUT and on +5_TRANS. They
+  need bench confirmation. The values are in the ATmega128A internal EEPROM, as <code>SRS-CFG-060</code> now requires (OI-11).</li>
+<li>A limit ERROR is kept across a reset in internal EEPROM. It clears on a healthy <code>mode normal</code> request, once the limits are back
+  in range.</li>
+<li>The Modbus limit registers <code>40031</code>–<code>40033</code> are in the implemented map. The design draft has no equivalent (OI-14).</li>
+<li>The startup self-test checks that the PAC1934 and 24C04 acknowledge. It does not check their configuration,
+  and it no longer includes the TPS55287 (see <a href="#5-self-test">section 5</a>).</li>
+<li>The regulator presence check now runs on demand, the first time TRANS is enabled after boot or after being
+  turned off, rather than at startup. Nothing currently re-arms the TPS55287's own registers (feedback mode,
+  voltage reference) after TRANS has been power-cycled; only its presence is re-checked.</li>
+<li>The link timeout raises the <code>link</code> WARNING cause and no longer turns outputs off by itself (revised
+  2026-10-15; see the open question below, now resolved).</li>
+<li>The eFuse fault debounce is fixed at 50 ms (<code>EFUSE_FAULT_DEBOUNCE_MS</code> in <code>app_power.c</code>), not yet bench-tuned
+  against the actual inrush duration on this board.</li>
+<li>Only the regulator fault flags are monitored. Other regulator faults (for example thermal) are not yet read.</li>
+<li>An I2C timeout from the TPS55287 sets ERROR while the regulator is monitored (NORMAL or WARNING) and TRANS is
+  on, as the regulator rule requires (OI-26). In MANUAL it sets only the WARNING cause (<code>bus=1</code> in <code>mode</code>), and
+  the mode stays MANUAL. A timeout from any other device sets WARNING until a transaction completes. A NACK from
+  an absent device is not a fault.</li>
+<li>The bootloader is not implemented, so there is no bootloader mode.</li>
+</ul>
+<h2 id="9-open-question">9. Open question</h2>
+<ul>
+<li><strong>Link timeout (Q7 follow-up) — resolved 2026-10-15.</strong> Decided the other way from the original 2026-10-05
+  call: link loss now sets WARNING and no longer turns outputs off by itself. See section 4 and OI-03.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../open_issues/" class="btn btn-neutral float-left" title="Open issues"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../code_implementation/versioning/" class="btn btn-neutral float-right" title="Versioning">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../open_issues/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../code_implementation/versioning/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../javascripts/mermaid.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

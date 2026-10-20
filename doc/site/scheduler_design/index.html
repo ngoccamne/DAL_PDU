@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Scheduler design - DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Scheduler design";
+        var mkdocs_page_input_path = "scheduler_design.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../current_firmware/">Current firmware architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../code_architecture/">Code architecture</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Scheduler design</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-model">1. Model</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-configuration">2. Configuration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-public-api">3. Public API</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#31-task-descriptor">3.1 Task descriptor</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-lifecycle">4. Lifecycle</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-algorithms">5. Algorithms</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#51-tick-isr-every-1-ms">5.1 Tick (ISR, every 1 ms)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#52-dispatch-main-loop">5.2 Dispatch (main loop)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#53-worked-timing-example">5.3 Worked timing example</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-coalescing">6. Coalescing</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-concurrency-rules">7. Concurrency rules</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-soft-timers">8. Soft timers</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#9-risks-and-limits">9. Risks and limits</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#10-design-trade-offs">10. Design trade-offs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#11-verification">11. Verification</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../command_reference/">Current command reference</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../hardware_overview/">Hardware overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../software_requirements/">Software requirements</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../use_cases_commands/">Use cases, user stories & commands</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../modbus_implementation/">Modbus RTU implementation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../open_issues/">Open issues</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../mode_state_machine/">Mode state machine</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/versioning/">Versioning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/unit_tests/">Unit tests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Scheduler design</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="scheduler-design">Scheduler design</h1>
+<p>This page documents the scheduler in <code>PDU/firmware/DAL_PDU/DAL_PDU/src/dev/M1_Sys/Scheduler/</code>
+(<code>scheduler.c</code>, <code>scheduler.h</code>, <code>scheduler_define.h</code>) as it exists today. It covers the model, the
+data each task carries, the rules for which context may touch which field, the timing it gives, and
+its known limits. The code architecture around it is in <a href="../code_architecture/">Code architecture</a>.</p>
+<h2 id="1-model">1. Model</h2>
+<p>The scheduler is a <strong>per-task-period, non-preemptive dispatcher</strong>:</p>
+<ul>
+<li>A 1 ms tick, driven by Timer0's compare interrupt, advances every registered task's own counter.</li>
+<li>When a counter reaches the task's period, the task is marked <strong>ready</strong>. The tick never runs the task.</li>
+<li>The main loop calls <code>SCH_HandleScheduledTask()</code>. That call runs every ready task once, in table index order.</li>
+<li>Each task has its own period, phase, and enable flag. Periods are not tied to a shared step grid.</li>
+<li>Tasks have <strong>no priority</strong>. Ordering is by table index only, and a running task is never preempted.</li>
+</ul>
+<p>Both halves are needed: the tick decides what is due, the main loop decides when it runs.</p>
+<p>The scheduler is not a cyclic executive. A cyclic executive derives each task's rate from a fixed step
+table, so every rate is a multiple of one step. The trade-off is discussed in
+<a href="#10-design-trade-offs">Design trade-offs</a>.</p>
+<h2 id="2-configuration">2. Configuration</h2>
+<table>
+<thead>
+<tr>
+<th>Symbol</th>
+<th>Value</th>
+<th>Where</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MAX_TASKS</code></td>
+<td>8</td>
+<td><code>scheduler_define.h</code></td>
+<td>Size of the static task table. Registering a ninth task fails.</td>
+</tr>
+<tr>
+<td><code>USE_SCH_SEMAPHORE</code></td>
+<td>not defined</td>
+<td><code>scheduler_define.h</code></td>
+<td>Enables the optional binary semaphore API and <code>MAX_SEMAPHORES</code> (2).</td>
+</tr>
+<tr>
+<td><code>SCH_SoftTimerTypedef</code></td>
+<td><code>SCH_TIM_LED</code>, <code>SCH_TIM_WDT</code>, <code>SCH_TIM_LAST</code></td>
+<td><code>scheduler_define.h</code></td>
+<td>Soft-timer slots. Add new slots before <code>SCH_TIM_LAST</code>.</td>
+</tr>
+<tr>
+<td>Tick source</td>
+<td>Timer0 compare, F_CPU / 64, OCR0 = 186 at 12 MHz</td>
+<td><code>bsp_timer.c</code></td>
+<td>1.0027 ms at 12 MHz (0.27 % slow). Exactly 1 ms at 16 MHz. A compile-time <code>#error</code> rejects any <code>F_CPU</code> that gives a count outside 1 to 256.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-public-api">3. Public API</h2>
+<table>
+<thead>
+<tr>
+<th>Function</th>
+<th>Context</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SCH_Initialize()</code></td>
+<td>Init</td>
+<td>Clear all state. Called by <code>SCH_InitializeTaskTable</code>.</td>
+</tr>
+<tr>
+<td><code>SCH_InitializeTaskTable(tasks, count)</code></td>
+<td>Init</td>
+<td>Validate, then copy a fixed table of <code>SCH_TaskContext</code>. Returns <code>SCH_ERROR</code> on any bad entry.</td>
+</tr>
+<tr>
+<td><code>SCH_TASK_CreateTask(&amp;handle, &amp;property)</code></td>
+<td>Init or main</td>
+<td>Register one task with a period. The property is copied.</td>
+</tr>
+<tr>
+<td><code>SCH_TASK_StopTask(handle)</code></td>
+<td>Main</td>
+<td>Disable the task, clear ready, restart its count on resume.</td>
+</tr>
+<tr>
+<td><code>SCH_TASK_ResumeTask(handle)</code></td>
+<td>Main</td>
+<td>Enable the task. The next run comes a full period later.</td>
+</tr>
+<tr>
+<td><code>SCH_TASK_SetPeriod(handle, ms)</code></td>
+<td>Main</td>
+<td>Change the period and restart the count. Does not change enable state.</td>
+</tr>
+<tr>
+<td><code>SCH_StartScheduler()</code></td>
+<td>Init</td>
+<td>Allow the tick to advance tasks and dispatch to run.</td>
+</tr>
+<tr>
+<td><code>SCH_StopScheduler()</code></td>
+<td>Main or init</td>
+<td>Stop, and <strong>clear the whole task table</strong>. Previously returned handles become invalid.</td>
+</tr>
+<tr>
+<td><code>SCH_RunSystemTickTimer()</code></td>
+<td>Tick ISR only</td>
+<td>Advance counters and soft timers.</td>
+</tr>
+<tr>
+<td><code>SCH_HandleScheduledTask()</code></td>
+<td>Main loop only</td>
+<td>Run every ready, enabled task once.</td>
+</tr>
+<tr>
+<td><code>SCH_SystemTick()</code></td>
+<td>Any</td>
+<td>Milliseconds since initialization, read atomically. Wraps after about 49.7 days.</td>
+</tr>
+<tr>
+<td><code>SCH_TIM_Start(timer, ms)</code></td>
+<td>Any</td>
+<td>Load a soft timer countdown.</td>
+</tr>
+<tr>
+<td><code>SCH_TIM_isCompleted(timer)</code></td>
+<td>Any</td>
+<td>TRUE when the countdown is zero. An out-of-range slot returns TRUE.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="31-task-descriptor">3.1 Task descriptor</h3>
+<pre><code class="language-c">typedef struct
+{
+    SCH_TASK function;          /* void (*)(void); must not be NULL */
+    volatile uint16_t period_ms;   /* 1..65535 ms, counted in ticks */
+    volatile uint16_t elapsed_ms;  /* ticks since the last ready or restart */
+    volatile uint8_t  ready;       /* set by the tick ISR, cleared by dispatch */
+    volatile uint8_t  enabled;     /* only enabled tasks count */
+} SCH_TaskContext;
+</code></pre>
+<p><code>SCH_InitializeTaskTable</code> rejects an entry with <code>period_ms == 0</code>, with <code>elapsed_ms &gt;= period_ms</code>, or
+with <code>ready</code> or <code>enabled</code> not equal to 0 or 1. That means the first run of a table entry happens after
+<code>period_ms - elapsed_ms</code> ticks. The application's table in <code>app_main.c</code> uses this to put the power check
+3 ms after startup, then every 6 ms.</p>
+<h2 id="4-lifecycle">4. Lifecycle</h2>
+<pre><code class="language-mermaid">stateDiagram-v2
+  [*] --&gt; Uninitialized
+  Uninitialized --&gt; Configured: SCH_InitializeTaskTable or SCH_TASK_CreateTask
+  Configured --&gt; Running: SCH_StartScheduler
+  Running --&gt; Stopped: SCH_StopScheduler (clears table)
+  Stopped --&gt; Configured: Re-register tasks
+  Running --&gt; Running: Tick and dispatch
+</code></pre>
+<p>Each task has its own small state machine:</p>
+<pre><code class="language-mermaid">stateDiagram-v2
+  [*] --&gt; Enabled: Create or Resume
+  Enabled --&gt; Waiting: Tick, elapsed below period
+  Waiting --&gt; Ready: Tick, elapsed reaches period
+  Ready --&gt; Waiting: Dispatch clears ready, function runs
+  Enabled --&gt; Disabled: Stop
+  Ready --&gt; Disabled: Stop clears ready
+  Waiting --&gt; Disabled: Stop
+  Disabled --&gt; Enabled: Resume, elapsed reset to 0
+</code></pre>
+<p><code>SCH_TASK_SetPeriod</code> moves a task back to Waiting with elapsed reset to 0, and leaves Enabled or
+Disabled unchanged.</p>
+<h2 id="5-algorithms">5. Algorithms</h2>
+<h3 id="51-tick-isr-every-1-ms">5.1 Tick (ISR, every 1 ms)</h3>
+<pre><code>if not running: return
+system_tick += 1
+for each task i in 0 .. task_count-1:
+    if task[i].enabled:
+        task[i].elapsed += 1
+        if task[i].elapsed &gt;= task[i].period:
+            task[i].elapsed = 0
+            task[i].ready = TRUE
+for each soft timer t in 0 .. SCH_TIM_LAST-1:
+    if timer[t] &gt; 0: timer[t] -= 1
+</code></pre>
+<h3 id="52-dispatch-main-loop">5.2 Dispatch (main loop)</h3>
+<pre><code>if not running: return
+for i = 0; i &lt; task_count and running; i++:
+    atomic:
+        run = task[i].ready and task[i].enabled
+        task[i].ready = FALSE
+    if run and task[i].function != NULL:
+        task[i].function()
+</code></pre>
+<p><code>ready</code> is cleared before the function runs. If the tick sets it again during the function, the task
+runs again on the next dispatch pass. A task cannot run twice in one pass, because the index only moves
+forward.</p>
+<h3 id="53-worked-timing-example">5.3 Worked timing example</h3>
+<p>With the application table, the Timer0 tick is at t = 0, 1, 2, ... ms.</p>
+<table>
+<thead>
+<tr>
+<th>Task</th>
+<th style="text-align: right;">Period</th>
+<th style="text-align: right;">Phase</th>
+<th>Ready at</th>
+<th>Dispatch at the earliest</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Power</td>
+<td style="text-align: right;">6 ms</td>
+<td style="text-align: right;">3 ms</td>
+<td>t = 3, 9, 15, ...</td>
+<td>Next main-loop pass after each tick</td>
+</tr>
+<tr>
+<td>Console</td>
+<td style="text-align: right;">10 ms</td>
+<td style="text-align: right;">0 ms</td>
+<td>t = 10, 20, 30, ...</td>
+<td>Next pass after each tick</td>
+</tr>
+<tr>
+<td>Heartbeat</td>
+<td style="text-align: right;">20 ms</td>
+<td style="text-align: right;">0 ms</td>
+<td>t = 20, 40, 60, ...</td>
+<td>Next pass after each tick</td>
+</tr>
+<tr>
+<td>Monitor</td>
+<td style="text-align: right;">1000 ms</td>
+<td style="text-align: right;">0 ms</td>
+<td>t = 1000, 2000, ...</td>
+<td>Next pass after each tick</td>
+</tr>
+<tr>
+<td>Watchdog</td>
+<td style="text-align: right;">10 ms</td>
+<td style="text-align: right;">0 ms</td>
+<td>t = 10, 20, 30, ...</td>
+<td>Next pass after each tick</td>
+</tr>
+<tr>
+<td>Temperature</td>
+<td style="text-align: right;">1000 ms</td>
+<td style="text-align: right;">0 ms</td>
+<td>t = 1000, 2000, ...</td>
+<td>Next pass after each tick</td>
+</tr>
+</tbody>
+</table>
+<p>If the main loop does not call dispatch for a while, a task that is ready when dispatch runs is
+delayed by that gap. Its next ready time is not affected.</p>
+<h2 id="6-coalescing">6. Coalescing</h2>
+<p>If a task's counter reaches its period again before dispatch runs, <code>ready</code> is already TRUE and stays
+TRUE. The second due time is lost. One call to the function covers both.</p>
+<p>This is intended. It keeps the main loop from being flooded when it falls behind. The cost is that
+the scheduler does not record missed periods; there is no overrun counter.</p>
+<h2 id="7-concurrency-rules">7. Concurrency rules</h2>
+<table>
+<thead>
+<tr>
+<th>Field or operation</th>
+<th>Written by</th>
+<th>Read by</th>
+<th>Protection</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>s_SystemTick</code></td>
+<td>Tick ISR</td>
+<td>Any context via <code>SCH_SystemTick</code></td>
+<td>Read inside <code>ATOMIC_BLOCK</code>. Written only from the tick ISR.</td>
+</tr>
+<tr>
+<td><code>elapsed</code> and <code>ready</code></td>
+<td>Tick ISR; main loop clears <code>ready</code> and resets <code>elapsed</code> on stop, resume, and period change</td>
+<td>Dispatch</td>
+<td>Main-loop writes are inside <code>ATOMIC_BLOCK</code>. Dispatch reads <code>ready</code> and clears it atomically.</td>
+</tr>
+<tr>
+<td><code>enabled</code></td>
+<td>Main loop only</td>
+<td>Tick ISR and dispatch</td>
+<td>Main-loop writes are inside <code>ATOMIC_BLOCK</code>.</td>
+</tr>
+<tr>
+<td>Task table and <code>task_count</code></td>
+<td>Init or main loop</td>
+<td>Tick ISR and dispatch</td>
+<td>Init and stop writes are atomic. Creating a task from a task body is allowed (see below).</td>
+</tr>
+<tr>
+<td>Soft timers</td>
+<td>Main loop (start) and tick ISR (decrement)</td>
+<td>Main loop</td>
+<td>Start and read are atomic. Decrement is ISR-only.</td>
+</tr>
+</tbody>
+</table>
+<p>Only the tick ISR calls the scheduler from interrupt context. The UART, software UART, Modbus, and
+Timer1 handlers never call it (checked across <code>M2_BSP</code> and <code>M3_Driver</code>). If that changes, the rule
+above has to be revisited.</p>
+<p>The timer ISR is declared with <code>ISR_NOBLOCK</code>. Other interrupts can therefore run while the tick is
+updating counters. That is safe only because none of those other interrupts touch scheduler state.</p>
+<p>A task body may call <code>SCH_TASK_CreateTask</code> during dispatch. Because the dispatch loop reads
+<code>task_count</code> on every iteration, a task created at a higher index can run in the same pass. Keep
+registration in init unless you need that behavior.</p>
+<h2 id="8-soft-timers">8. Soft timers</h2>
+<p>Soft timers are 32-bit millisecond countdowns, unrelated to the task table. The heartbeat task uses
+<code>SCH_TIM_LED</code> for its ON and OFF phases. <code>SCH_TIM_WDT</code> is declared in <code>scheduler_define.h</code> but no module starts it. The watchdog module
+measures its own intervals from <code>SCH_SystemTick</code> instead.</p>
+<p>Starting a timer with <code>0</code> makes it complete immediately. An out-of-range slot reports completed, so a bad
+index cannot block a caller.</p>
+<h2 id="9-risks-and-limits">9. Risks and limits</h2>
+<table>
+<thead>
+<tr>
+<th>#</th>
+<th>Limit</th>
+<th>Effect</th>
+<th>Current mitigation</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>R1</td>
+<td>No priorities; a running task is not preempted</td>
+<td>A long task delays all later tasks in the pass and the next pass.</td>
+<td>Tasks are short by convention. Nothing enforces it.</td>
+</tr>
+<tr>
+<td>R2</td>
+<td>No execution-time measurement</td>
+<td>A slow task cannot be detected in the field.</td>
+<td>None. Candidate for a debug-build timing hook.</td>
+</tr>
+<tr>
+<td>R3</td>
+<td>Coalescing hides missed periods</td>
+<td>Overload is invisible.</td>
+<td>None. Candidate for an overrun counter per task.</td>
+</tr>
+<tr>
+<td>R4</td>
+<td>Dispatch latency is not bounded by the scheduler</td>
+<td>Worst-case delay is 1 ms tick plus the longest main-loop pass, including <code>eMBPoll</code> and any task body.</td>
+<td>Not measured. Needs a worst-case budget per pass.</td>
+</tr>
+<tr>
+<td>R5</td>
+<td><code>SCH_StopScheduler</code> clears the whole table</td>
+<td>Old handles become invalid. Restarting without re-registering runs nothing.</td>
+<td>Stop is only called on init failure today.</td>
+</tr>
+<tr>
+<td>R6</td>
+<td>Init failure spins with interrupts off</td>
+<td>No logging. Recovery depends on the external TPL5010 reset.</td>
+<td>Intentional. Documented in <a href="../code_architecture/#3-startup-sequence">Code architecture</a>.</td>
+</tr>
+<tr>
+<td>R7</td>
+<td>49.7-day wrap of <code>SCH_SystemTick</code></td>
+<td>Direct comparisons break after about 50 days of uptime.</td>
+<td>Callers use unsigned subtraction. The watchdog module does.</td>
+</tr>
+<tr>
+<td>R8</td>
+<td>16-bit period and elapsed counters</td>
+<td>Maximum period is 65535 ms, about 65 s.</td>
+<td><code>SCH_TASK_CreateTask</code> and <code>SetPeriod</code> reject 0. Larger periods are not supported.</td>
+</tr>
+</tbody>
+</table>
+<p>R4 is the one that matters most for the watchdog. The TPL5010 is serviced from a 10 ms task. If a
+pass runs longer than the watchdog's 200 ms client and monitor timeouts, the application watchdog
+latches a fault and stops the DONE pulses. Measure the worst-case pass on hardware before relying on
+that margin.</p>
+<h2 id="10-design-trade-offs">10. Design trade-offs</h2>
+<p>These are the trade-offs against a fixed cyclic executive, the model used by the AL020004 reference
+(PIC18, Microchip C18) that was reviewed during design.</p>
+<table>
+<thead>
+<tr>
+<th>Property</th>
+<th>Current per-period scheduler</th>
+<th>Cyclic executive</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Rate of each task</td>
+<td>Any value in ms, independent per task</td>
+<td>Multiple of the step period, fixed by step membership</td>
+</tr>
+<tr>
+<td>Changing a rate</td>
+<td>Call <code>SCH_TASK_SetPeriod</code></td>
+<td>Edit the step masks and rebuild</td>
+</tr>
+<tr>
+<td>Dispatch order</td>
+<td>Table index, no priority</td>
+<td>Fixed by bit position within a step</td>
+</tr>
+<tr>
+<td>Schedule analysis</td>
+<td>Needs per-pass worst-case budgeting</td>
+<td>The whole schedule can be read off one table</td>
+</tr>
+<tr>
+<td>Runtime control</td>
+<td>Stop, resume, and change period</td>
+<td>None</td>
+</tr>
+<tr>
+<td>Missed deadline visibility</td>
+<td>Hidden by coalescing</td>
+<td>Visible as a skipped step</td>
+</tr>
+<tr>
+<td>Failure containment</td>
+<td>Watchdog and fault latch in the app layer</td>
+<td>Same, plus a static proof of watchdog service interval</td>
+</tr>
+</tbody>
+</table>
+<p>The current scheduler was chosen for runtime flexibility. Its weakest point for a safety argument is R4:
+the worst-case pass length has to be measured and documented, not inferred from the table. Adding an
+overrun counter (R3) and a per-pass timing hook (R2) would close most of the gap without changing the model.</p>
+<h2 id="11-verification">11. Verification</h2>
+<p><code>make -C PDU/tests test</code> runs the scheduler under the host harness in both configurations
+(<code>test_scheduler.exe</code> and <code>test_scheduler_semaphore.exe</code>). The suite checks tick and timer behavior,
+lifecycle, semaphores, per-task periods, stop and resume, period changes, capacity, and pending flag
+coalescing. The app startup test checks the 10, 20, and 6 ms task periods and Timer0 setup.</p>
+<p>The host build uses a single-threaded <code>atomic.h</code> shim. It does not check interrupt safety, nested ISR
+behavior, or the timing in R4. Those need bench measurement on the board.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../code_architecture/" class="btn btn-neutral float-left" title="Code architecture"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../command_reference/" class="btn btn-neutral float-right" title="Current command reference">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../code_architecture/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../command_reference/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../javascripts/mermaid.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

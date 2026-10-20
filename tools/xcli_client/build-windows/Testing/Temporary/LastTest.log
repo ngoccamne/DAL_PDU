@@ -1,0 +1,42 @@
+Start testing: Oct 19 14:58 SE Asia Standard Time
+----------------------------------------------------------
+1/1 Testing: client_help
+1/1 Test: client_help
+Command: "D:/PROJECT/LIINSPACE/DAL/SOFTWARE/PDU/tools/xcli_client/build-windows/xcli_client.exe" "--help"
+Directory: D:/PROJECT/LIINSPACE/DAL/SOFTWARE/PDU/tools/xcli_client/build-windows
+"client_help" start time: Oct 19 14:58 SE Asia Standard Time
+Output:
+----------------------------------------------------------
+Usage: D:/PROJECT/LIINSPACE/DAL/SOFTWARE/PDU/tools/xcli_client/build-windows/xcli_client.exe --port <dev> [options]
+
+Connection:
+  --port   <dev>    Serial port  [default: COM5 on Windows, /dev/ttyS1 on Linux]
+  --baud   <n>      Baud rate    [default: 115200]
+  --arq             Enable xTP ARQ
+  --no-arq          Disable xTP ARQ
+  --ecc             Enable xTP ECC
+  --no-ecc          Disable xTP ECC
+  --crc32           Use CRC-32 (default: CRC-16)
+  --verbose         Enable verbose xTP logging
+
+Modes:
+  --repl            Interactive REPL (default)
+  --cmd  <str>      Send one command and exit
+  --cmd-id <hex>    CMD_ID override for --cmd (e.g. 0x02)
+  --test            Run built-in smoke tests
+
+Examples:
+  D:/PROJECT/LIINSPACE/DAL/SOFTWARE/PDU/tools/xcli_client/build-windows/xcli_client.exe --port COM5 --cmd "ping 0" --cmd-id 0x02
+  D:/PROJECT/LIINSPACE/DAL/SOFTWARE/PDU/tools/xcli_client/build-windows/xcli_client.exe --port COM5 --cmd "cli trans get" --cmd-id 0x30
+  D:/PROJECT/LIINSPACE/DAL/SOFTWARE/PDU/tools/xcli_client/build-windows/xcli_client.exe --port COM5 --repl
+
+<end of output>
+Test time =   0.09 sec
+----------------------------------------------------------
+Test Pass Reason:
+Required regular expression found. Regex=[Usage:]
+"client_help" end time: Oct 19 14:58 SE Asia Standard Time
+"client_help" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Oct 19 14:58 SE Asia Standard Time

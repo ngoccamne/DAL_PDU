@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Versioning - DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Versioning";
+        var mkdocs_page_input_path = "code_implementation\\versioning.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../current_firmware/">Current firmware architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../code_architecture/">Code architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../scheduler_design/">Scheduler design</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../command_reference/">Current command reference</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../hardware_overview/">Hardware overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../software_requirements/">Software requirements</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../use_cases_commands/">Use cases, user stories & commands</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../modbus_implementation/">Modbus RTU implementation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../open_issues/">Open issues</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../mode_state_machine/">Mode state machine</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Versioning</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#where-the-code-lives">Where the code lives</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#what-the-version-means">What the version means</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#change-the-version-by-hand">Change the version by hand</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#generate-the-build-identity">Generate the build identity</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#build-a-release-copy">Build a release copy</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#run-both-steps-from-atmel-studio">Run both steps from Atmel Studio</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#where-the-version-appears">Where the version appears</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#notes">Notes</a>
+    </li>
+    </ul>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../unit_tests/">Unit tests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Code Implementation</li>
+      <li class="breadcrumb-item active">Versioning</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="versioning">Versioning</h1>
+<p>The firmware has two identities. They are kept apart on purpose:</p>
+<table>
+<thead>
+<tr>
+<th>Identity</th>
+<th>Set by</th>
+<th>Shows</th>
+<th>Changes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>Version</strong> <code>MAJOR.MINOR.PATCH</code> and a release stage</td>
+<td>A person, in <code>version.h</code></td>
+<td><code>version</code> command, Modbus <code>40102</code>–<code>40103</code>, release file names</td>
+<td>Only when someone edits the file, in a reviewed commit</td>
+</tr>
+<tr>
+<td><strong>Build</strong> (short git commit, <code>-dirty</code> flag)</td>
+<td>The build tool, from git</td>
+<td><code>version</code> command, Modbus <code>40107</code>–<code>40108</code>, release file names</td>
+<td>Automatically, with each commit and with uncommitted edits</td>
+</tr>
+</tbody>
+</table>
+<p>There is no build date. A date changes on every rebuild, so two identical sources would produce different images.</p>
+<h2 id="where-the-code-lives">Where the code lives</h2>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Role</th>
+<th>Edited by</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>firmware/DAL_PDU/DAL_PDU/src/dev/M1_Sys/Version/version.h</code></td>
+<td>The version numbers and the release stage. It includes <code>build_id.h</code>.</td>
+<td>A person</td>
+</tr>
+<tr>
+<td><code>firmware/DAL_PDU/DAL_PDU/src/dev/M1_Sys/Version/build_id.h</code></td>
+<td>The build identity. Generated, and tracked by git. It changes with each build.</td>
+<td><code>tools/gen_build_id.py</code></td>
+</tr>
+<tr>
+<td><code>tools/gen_build_id.py</code></td>
+<td>Reads git and writes <code>build_id.h</code>. It rewrites the file only when its content changes, so an unchanged tree does not recompile.</td>
+<td>Nobody, normally</td>
+</tr>
+<tr>
+<td><code>tools/release.py</code></td>
+<td>Copies the Studio output to <code>release/</code> with the version and build in the name.</td>
+<td>Nobody, normally</td>
+</tr>
+<tr>
+<td><code>firmware/.../M1_Sys/CommandLine/command.c</code></td>
+<td>The <code>version</code> command.</td>
+<td>—</td>
+</tr>
+<tr>
+<td><code>firmware/.../M0_App/app_modbus.c</code></td>
+<td>Modbus <code>40102</code>–<code>40103</code> and <code>40107</code>–<code>40108</code>.</td>
+<td>—</td>
+</tr>
+</tbody>
+</table>
+<p>The version is not in <code>command.h</code> any more. Only <code>version.h</code> holds the version numbers.</p>
+<h2 id="what-the-version-means">What the version means</h2>
+<ul>
+<li><strong>MAJOR:</strong> an incompatible change for the OBC. A register changes its meaning, or a command changes its reply format. Increase MAJOR and reset MINOR and PATCH to 0.</li>
+<li><strong>MINOR:</strong> new registers, commands, or events that old clients can ignore. Reset PATCH to 0.</li>
+<li><strong>PATCH:</strong> a fix with no change to the interface.</li>
+<li><strong>Release stage:</strong> <code>"Development"</code> until the first bench-verified build, then <code>"Release"</code>.</li>
+</ul>
+<p>Changes to the persistent EEPROM layouts are a separate axis. The event ring, the configuration record, and the clock checkpoint each have their own version byte or magic. Record a layout change in the changelog, and bump the matching byte, so old data is ignored instead of misread.</p>
+<h2 id="change-the-version-by-hand">Change the version by hand</h2>
+<ol>
+<li>Edit <code>version.h</code>: the three <code>FIRMWARE_VERSION_*</code> values and, if needed, <code>FIRMWARE_STATUS</code>.</li>
+<li>Update the requirements and the Modbus page if the interface changed.</li>
+<li>Commit the change, with the new version in the message.</li>
+<li>Tag the commit when it is released to the bench, for example <code>fw-v0.2.0</code>.</li>
+</ol>
+<p>The version is not derived from git tags. A build without tags would otherwise report the wrong version.</p>
+<h2 id="generate-the-build-identity">Generate the build identity</h2>
+<p>Run the script from the PDU folder:</p>
+<pre><code>python tools/gen_build_id.py
+</code></pre>
+<p>Output, when the tree has uncommitted changes:</p>
+<pre><code>build_id.h written: c7f0bf8-dirty
+</code></pre>
+<p>Output, when rebuilt with no changes since the last run:</p>
+<pre><code>build_id.h unchanged: c7f0bf8-dirty
+</code></pre>
+<p>The generated header looks like this:</p>
+<pre><code class="language-c">#define FIRMWARE_BUILD_ID &quot;c7f0bf8-dirty&quot;
+/* Bit 28 is the dirty flag. Bits 0 to 27 are the short commit hash. */
+#define FIRMWARE_BUILD_CODE 0x1C7F0BF8UL
+</code></pre>
+<ul>
+<li>A clean tree gives the plain short hash, for example <code>c7f0bf8</code>.</li>
+<li>Uncommitted changes add <code>-dirty</code>.</li>
+<li>Without git the build is <code>nogit</code>, with code <code>0x10000000</code>.</li>
+</ul>
+<p>The script tries <code>git</code> on the PATH first, then <code>C:\Program Files\Git\cmd\git.exe</code> and <code>...\mingw64\bin\git.exe</code>.</p>
+<p>The host test Makefile runs the script before it compiles anything, so <code>make -C tests test</code> always has a current header.</p>
+<h2 id="build-a-release-copy">Build a release copy</h2>
+<p>Build the firmware in Studio first. Then run:</p>
+<pre><code>python tools/release.py Debug
+</code></pre>
+<p>or <code>python tools/release.py Release</code> for the Release configuration. The script copies the image into <code>release/</code>:</p>
+<pre><code>release: release/DAL_PDU_v0.1.0_c7f0bf8-dirty.hex
+release: release/DAL_PDU_v0.1.0_c7f0bf8-dirty.elf
+</code></pre>
+<p>The script reads the version from <code>version.h</code> and the build from <code>build_id.h</code>, so run <code>gen_build_id.py</code> first, or let the Studio pre-build event do it. It copies the image that is already in the configuration folder, so a stale image gives a release with the new name and the old code.</p>
+<h2 id="run-both-steps-from-atmel-studio">Run both steps from Atmel Studio</h2>
+<p>Open the project properties, then Build Events, and set:</p>
+<ul>
+<li><strong>Pre-build:</strong> <code>python "$(ProjectDir)..\..\..\tools\gen_build_id.py"</code></li>
+<li><strong>Post-build:</strong> <code>python "$(ProjectDir)..\..\..\tools\release.py" $(ConfigurationName)</code></li>
+</ul>
+<p>Studio then generates the build identity before each compile, and copies a release after each build. <code>$(ProjectDir)</code> points at <code>firmware\DAL_PDU\DAL_PDU\</code>, so three levels up is the PDU folder.</p>
+<p>Without the pre-build step the compile fails, because <code>build_id.h</code> is missing from a fresh clone.</p>
+<h2 id="where-the-version-appears">Where the version appears</h2>
+<table>
+<thead>
+<tr>
+<th>Output</th>
+<th>Shows</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Console <code>version</code></td>
+<td><code>DAL_PDU firmware v0.1.0 (Development) build c7f0bf8-dirty</code></td>
+</tr>
+<tr>
+<td>Modbus <code>40102</code></td>
+<td>Major in the high byte, minor in the low byte</td>
+</tr>
+<tr>
+<td>Modbus <code>40103</code></td>
+<td>Patch</td>
+</tr>
+<tr>
+<td>Modbus <code>40107</code>–<code>40108</code></td>
+<td>The build code: high word first</td>
+</tr>
+<tr>
+<td>Release file name</td>
+<td><code>DAL_PDU_v0.1.0_c7f0bf8-dirty.hex</code></td>
+</tr>
+</tbody>
+</table>
+<h2 id="notes">Notes</h2>
+<ul>
+<li><code>release/</code> is in <code>.gitignore</code>. <code>build_id.h</code> is tracked, so a fresh clone builds once the script has run. Commit it with the release.</li>
+<li>Python must be on the PATH for Studio and for the test Makefile.</li>
+<li>A <code>-dirty</code> build is not reproducible from the commit alone. Commit before a release build.</li>
+<li>The bootloader (OI-16) will store the version and a CRC in the bank header, so it can refuse a downgrade. The version fields will keep the same place in every build.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../../mode_state_machine/" class="btn btn-neutral float-left" title="Mode state machine"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../unit_tests/" class="btn btn-neutral float-right" title="Unit tests">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../../mode_state_machine/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../unit_tests/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../../javascripts/mermaid.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

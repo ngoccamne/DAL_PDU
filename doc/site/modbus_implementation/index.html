@@ -1,0 +1,628 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Modbus RTU implementation - DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Modbus RTU implementation";
+        var mkdocs_page_input_path = "modbus_implementation.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../current_firmware/">Current firmware architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../code_architecture/">Code architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../scheduler_design/">Scheduler design</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../command_reference/">Current command reference</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../hardware_overview/">Hardware overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../software_requirements/">Software requirements</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../use_cases_commands/">Use cases, user stories & commands</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Modbus RTU implementation</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#events-and-clock">Events and clock</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#scheduling">Scheduling</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#coils-fc-010515">Coils (FC 01/05/15)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#holding-registers-fc-030616">Holding registers (FC 03/06/16)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#other-implemented-telemetry">Other implemented telemetry</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#design-differences">Design differences</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../open_issues/">Open issues</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../mode_state_machine/">Mode state machine</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/versioning/">Versioning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/unit_tests/">Unit tests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Modbus RTU implementation</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="modbus-rtu-implementation">Modbus RTU implementation</h1>
+<p>The ATmega128A runs a Modbus RTU slave at the configured address (<strong>1</strong> by default) and baud (<strong>9600</strong> by default), <strong>8N1</strong> on
+USART1. RX is PD2, TX is PD3, and PD5 drives the RS485 direction line (high
+to transmit). Timer1 supplies the RTU silence interval. FreeMODBUS is a
+submodule under <code>firmware/DAL_PDU/DAL_PDU/src/dev/M4_MiddleWare/ThirdParty/freemodbus/</code>.
+Clone with <code>git submodule update --init</code> before building.</p>
+<p>Addresses below use conventional one-based Modbus notation. Subtract one for
+masters that expect zero-based request offsets: coil <code>00002</code> has offset <code>1</code>.
+Unsupported addresses return an illegal address exception. Other addresses in
+the <a href="../use_cases_commands/#modbus-rtu-interface">design draft</a> remain reserved.</p>
+<h2 id="events-and-clock">Events and clock</h2>
+<p>The OBC reads an event in two steps. Write <code>40050</code> with the sequence number wanted (<code>0</code> for the newest). Then read <code>30041</code>–<code>30047</code>. Poll <code>30041</code> alone to see when a new event arrives, since it changes with each event. The clock is set with <code>40040</code>–<code>40041</code> and read with <code>30039</code>–<code>30040</code>. Both use the same clock as the console <code>time</code> command. Check <code>30048</code> for the clock source: <code>RESTORED</code> means the time came from the last checkpoint and is approximate until the OBC sets it. The clock is checkpointed to EEPROM every 15 minutes.</p>
+<h2 id="scheduling">Scheduling</h2>
+<p>The Modbus port is polled by a 5 ms task, not by the main loop. Each run calls <code>eMBPoll</code> twice, so a request is
+answered within about one period, which is 5 ms plus the length of the other tasks in that pass. The task also
+checks in with the watchdog (200 ms timeout). A request is a single frame, and the master waits for the reply,
+so polling every 5 ms is well inside any normal master response timeout. Keep any single task well under the
+200 ms watchdog timeout, since a long task delays the Modbus reply.</p>
+<h2 id="coils-fc-010515">Coils (FC 01/05/15)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Address</th>
+<th>Name</th>
+<th>Read value and write behavior</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;"><code>00001</code></td>
+<td><code>VOUT_ENABLE</code></td>
+<td>Actual TPS55287 enable bit. Enabling powers TRANS on first if it is off and confirms the chip answers; still refused if a fault input is active. Disabling never powers TRANS on. Reads do not clear TPS fault flags.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>00002</code></td>
+<td><code>TRANS_BRANCH_ENABLE</code></td>
+<td>Actual TRANS eFuse output. A fault or a latched fault rejects enable. Disabling TRANS also requests VOUT off.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>00003</code></td>
+<td><code>CLEAR_FAULT_LATCH</code></td>
+<td>Read: 1 while any fault is latched. Write 1 to clear the latch in internal EEPROM. Write 0 does nothing. The latch does not enable TRANS.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>00010</code></td>
+<td><code>HEARTBEAT_ENABLE</code></td>
+<td>LED blinking enable. Applies to the NORMAL pattern only. Fault and warning indications always show.</td>
+</tr>
+</tbody>
+</table>
+<p>Coils <code>00001</code> and <code>00002</code> can be read or written together. In a two-coil
+write, bit 0 is VOUT and bit 1 is TRANS. Enabling VOUT while disabling TRANS
+is rejected. Enabling both turns TRANS on first; a failed VOUT enable rolls
+back a newly enabled TRANS branch.</p>
+<h2 id="holding-registers-fc-030616">Holding registers (FC 03/06/16)</h2>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Address</th>
+<th>Name</th>
+<th>Access</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;"><code>40001</code></td>
+<td><code>VOUT_SETPOINT_MV</code></td>
+<td>R/W</td>
+<td>Commanded setpoint in mV, read from system data. <code>0xFFFF</code> until a setpoint is commanded since reset. Same value as input <code>30023</code>. A write powers TRANS on first if it is off and confirms the chip answers, then feedback mode and voltage range determine whether it is accepted.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40020</code>–<code>40021</code></td>
+<td><code>LED_ON_MS</code></td>
+<td>R/W</td>
+<td>Unsigned 32-bit milliseconds, high word first.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40022</code>–<code>40023</code></td>
+<td><code>LED_OFF_MS</code></td>
+<td>R/W</td>
+<td>Unsigned 32-bit milliseconds, high word first.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40030</code></td>
+<td><code>MODE_REQUEST</code></td>
+<td>R/W</td>
+<td>Read: mode (0 NORMAL, 1 MANUAL, 2 WARNING, 3 ERROR). Write 0 to request NORMAL, 1 to request MANUAL. Refused in ERROR.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40031</code></td>
+<td><code>LIMIT_TEMP</code></td>
+<td>R/W</td>
+<td>Over-temperature limit in tenths of a degree C, signed. Range -400 to 1250. Stored in internal EEPROM.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40032</code></td>
+<td><code>LIMIT_VOUT</code></td>
+<td>R/W</td>
+<td>VOUT overcurrent limit in mA. Range 100 to 5000. Stored in internal EEPROM.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40033</code></td>
+<td><code>LIMIT_TRANS</code></td>
+<td>R/W</td>
+<td>+5_TRANS overcurrent limit in mA. Range 100 to 5000. Stored in internal EEPROM.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40040</code>–<code>40041</code></td>
+<td><code>CLOCK_TIME</code></td>
+<td>R/W</td>
+<td>Clock time, Unix seconds (UTC), high word first. Reads <code>0xFFFF 0xFFFF</code> when unset. Write both words to set the clock; the write is logged as a <code>CLOCK_SET</code> event. <code>0xFFFFFFFF</code> is refused.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40050</code></td>
+<td><code>EVENT_SELECT</code></td>
+<td>R/W</td>
+<td>Sequence number of the event read on <code>30041</code>–<code>30047</code>. <code>0</code> selects the newest event.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40100</code>–<code>40101</code></td>
+<td><code>PRODUCT_CODE</code></td>
+<td>Read only</td>
+<td>ASCII <code>PDU\0</code> as <code>0x5044</code>, <code>0x5500</code>.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40102</code></td>
+<td><code>FW_VERSION</code></td>
+<td>Read only</td>
+<td>Major in high byte, minor in low byte; currently <code>0x0001</code>.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40103</code></td>
+<td><code>FW_PATCH</code></td>
+<td>Read only</td>
+<td>Patch version; currently <code>0</code>.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40104</code></td>
+<td><code>CPU_MHZ</code></td>
+<td>Read only</td>
+<td>CPU clock in MHz; currently <code>12</code>.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40105</code></td>
+<td><code>SLAVE_ADDRESS</code></td>
+<td>Read only</td>
+<td>Active RTU slave address, from the configuration. Set with <code>config set address</code>; applies at the next boot.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40106</code></td>
+<td><code>BAUD_RATE</code></td>
+<td>Read only</td>
+<td>Active RTU baud rate, from the configuration (1200 to 38400). Set with <code>config set baud</code>; applies at the next boot.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40107</code>–<code>40108</code></td>
+<td><code>FW_BUILD</code></td>
+<td>Read only</td>
+<td>Build code, high word first. Bit 28 is the dirty flag. Bits 0 to 27 are the short git commit.</td>
+</tr>
+</tbody>
+</table>
+<p>Read the seven-word identity block with FC 03 starting at <code>40100</code> (request
+offset <code>99</code>). Writes to that block are rejected. Requests cannot span gaps
+between register groups. Both LED periods must be nonzero.</p>
+<h2 id="other-implemented-telemetry">Other implemented telemetry</h2>
+<table>
+<thead>
+<tr>
+<th>Type</th>
+<th style="text-align: right;">Address</th>
+<th>Meaning</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Discrete input</td>
+<td style="text-align: right;"><code>10001</code></td>
+<td>12V TRANS eFuse fault (U1), PC4. Set while the fault input is low.</td>
+</tr>
+<tr>
+<td>Discrete input</td>
+<td style="text-align: right;"><code>10002</code></td>
+<td>12V_MCU eFuse fault (U2), PC0. Set while the fault input is low. Reported and latched. Firmware cannot switch the MCU branch off.</td>
+</tr>
+<tr>
+<td>Discrete input</td>
+<td style="text-align: right;"><code>10010</code></td>
+<td>Actual heartbeat LED output state.</td>
+</tr>
+<tr>
+<td>Discrete input</td>
+<td style="text-align: right;"><code>10011</code></td>
+<td>Actual TRANS output state.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30020</code></td>
+<td>Status bits: bit 0 LED on, bit 1 TRANS on, bit 2 PC4 fault (12V TRANS), bit 3 PC0 fault (12V_MCU), bit 4 PC4 latched, bit 5 PC0 latched, bit 6 VOUT setpoint mismatch.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30021</code></td>
+<td>Board temperature in tenths of a degree Celsius, signed 16-bit (<code>251</code> is 25.1 °C). <code>0x8000</code> means no valid reading.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30022</code></td>
+<td>Operating mode: 0 NORMAL, 1 MANUAL, 2 WARNING, 3 ERROR. See <a href="../mode_state_machine/">Mode state machine</a>.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30023</code></td>
+<td>Commanded VOUT setpoint in mV, from the console or Modbus <code>40001</code>. <code>0xFFFF</code> until a setpoint is commanded since reset.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30024</code></td>
+<td>Measured VOUT voltage in mV, PAC1934 channel 1. <code>0xFFFF</code> when the PAC1934 is unavailable.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30025</code></td>
+<td>Measured VOUT current in mA. Clamped to <code>0xFFFE</code>. <code>0xFFFF</code> when unavailable.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30026</code></td>
+<td>Measured +12 input voltage in mV.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30027</code></td>
+<td>Measured +12 input current in mA.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30028</code></td>
+<td>Measured +5_TRANS voltage in mV.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30029</code></td>
+<td>Measured +5_TRANS current in mA.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30030</code></td>
+<td>Measured +5 voltage in mV.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30031</code></td>
+<td>Measured +5 current in mA.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30032</code></td>
+<td>Boot count since the boot record was first written. Increments once per boot.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30033</code></td>
+<td>Cause of the last boot: 1 POWER_ON, 2 BROWN_OUT, 3 EXTERNAL, 4 AVR_WATCHDOG, 5 CLIENT_WATCHDOG, 6 COMMAND, 0 UNKNOWN.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30034</code></td>
+<td>Watchdog source when the cause is 5: 1 CONSOLE, 2 HEARTBEAT, 3 MODBUS, 4 POWER_MONITOR, 5 TEMPERATURE, 16 MONITOR. Otherwise 0.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30035</code></td>
+<td>Rail power, VOUT, in 10 mW units. <code>0xFFFF</code> when the PAC1934 is unavailable. Clamped to <code>0xFFFE</code>.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30036</code></td>
+<td>Rail power, +12 input, in 10 mW units. Same rules as <code>30035</code>.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30037</code></td>
+<td>Rail power, +5_TRANS, in 10 mW units. Same rules as <code>30035</code>.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30038</code></td>
+<td>Rail power, +5, in 10 mW units. Same rules as <code>30035</code>.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30039</code>–<code>30040</code></td>
+<td>Clock time, Unix seconds (UTC), high word first. <code>0xFFFF 0xFFFF</code> when unset.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30041</code></td>
+<td>Sequence of the selected event. <code>0</code> when no stored event matches <code>40050</code>.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30042</code></td>
+<td>Severity of the selected event: 1 INFO, 2 WARNING.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30043</code></td>
+<td>Code of the selected event: 1 TEMP, 2 VOUT_CURRENT, 3 TRANS_CURRENT, 4 I2C_TIMEOUT, 5 CONFIG_CHANGED, 6 SETPOINT_MISMATCH, 7 CLOCK_SET.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30044</code></td>
+<td>Mode when the event was logged: 0 NORMAL, 1 MANUAL, 2 WARNING, 3 ERROR.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30045</code></td>
+<td>Value of the selected event, signed. Units depend on the code.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30046</code>–<code>30047</code></td>
+<td>Time of the selected event, Unix seconds, high word first. <code>0xFFFF 0xFFFF</code> when unset.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30048</code></td>
+<td>Clock source now: 0 UNSET, 1 RESTORED (approximate, from the last EEPROM checkpoint after a reset), 2 SET.</td>
+</tr>
+<tr>
+<td>Input register</td>
+<td style="text-align: right;"><code>30049</code></td>
+<td>Clock source of the selected event, same values. <code>0</code> when no event matches.</td>
+</tr>
+</tbody>
+</table>
+<p>The TRANS application checks both fault pins every 6 ms and switches the
+eFuse off if either is active. The callbacks use <code>SystemData</code> for shared
+values, <code>AppPower_SetTrans</code>/<code>AppPower_EnsureRegulatorOn</code> for TRANS, and the
+TPS55287 BSP for VOUT. Coil <code>00001</code> (single write) and holding register
+<code>40001</code> both call <code>AppPower_EnsureRegulatorOn</code> before touching the TPS55287,
+so an OBC does not need to write coil <code>00002</code> first; the two-coil write at
+<code>00001</code> still handles VOUT and TRANS together explicitly.</p>
+<p>The address and baud rate are fixed; the draft configuration registers are
+not implemented. Hardware revision and serial number have no defined source
+in this firmware. PD5 as the direction pin is confirmed on the board; verify its polarity and RX/TX timing on hardware.</p>
+<p>The AVR project compiles upstream <code>mbrtu.c</code> through the local
+<code>M2_BSP/Modbus/mbrtu_avr.c</code> wrapper. That wrapper suppresses one unused
+STM32-only CRC temporary warning while keeping the FreeMODBUS submodule clean.</p>
+<h2 id="design-differences">Design differences</h2>
+<p>The implemented map is the reference (decided 2026-10-06, OI-14). The design draft in <a href="../use_cases_commands/#modbus-rtu-interface">Use cases</a> differs as follows. "Not built" means the address is not implemented and is not planned unless the OBC needs it.</p>
+<table>
+<thead>
+<tr>
+<th>Design address</th>
+<th>Design meaning</th>
+<th>Decision</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>00004</code></td>
+<td><code>ENTER_BOOTLOADER</code></td>
+<td>Deferred to the bootloader work (OI-16).</td>
+</tr>
+<tr>
+<td><code>10001</code></td>
+<td><code>EFUSE1_FAULT</code> (U1 transducer)</td>
+<td>Kept as <code>10001</code>: PC4, the 12V TRANS fault.</td>
+</tr>
+<tr>
+<td><code>10002</code></td>
+<td><code>EFUSE2_FAULT</code> (U2 MCU branch)</td>
+<td>Kept: PC0, the 12V_MCU fault.</td>
+</tr>
+<tr>
+<td><code>10003</code></td>
+<td><code>OVER_TEMP_FLAG</code></td>
+<td>Not built. Temperature is in <code>30021</code>, and the ERROR mode is in <code>30022</code>.</td>
+</tr>
+<tr>
+<td><code>10004</code></td>
+<td><code>COMMS_WATCHDOG_TRIPPED</code></td>
+<td>Not built.</td>
+</tr>
+<tr>
+<td><code>30001</code>–<code>30008</code></td>
+<td>Rails, V and mA</td>
+<td>Kept at <code>30024</code>–<code>30031</code>.</td>
+</tr>
+<tr>
+<td><code>30009</code></td>
+<td>Board temperature, °C×10</td>
+<td>Kept at <code>30021</code>, tenths of a degree.</td>
+</tr>
+<tr>
+<td><code>30010</code></td>
+<td><code>FW_VERSION</code> (input)</td>
+<td>Kept as holding <code>40102</code>.</td>
+</tr>
+<tr>
+<td><code>30011</code>–<code>30015</code></td>
+<td>Active bank, bank status, uptime</td>
+<td>Not built (bootloader, OI-16).</td>
+</tr>
+<tr>
+<td><code>30016</code></td>
+<td><code>RESET_REASON_CODE</code></td>
+<td>Kept as boot information at <code>30032</code>–<code>30034</code>, with cause 6 COMMAND.</td>
+</tr>
+<tr>
+<td><code>30017</code></td>
+<td><code>SYSTEM_MODE</code></td>
+<td>Kept at <code>30022</code>.</td>
+</tr>
+<tr>
+<td><code>40001</code></td>
+<td><code>VOUT_SETPOINT_MV</code></td>
+<td>Kept. Also on <code>30023</code>.</td>
+</tr>
+<tr>
+<td><code>40002</code></td>
+<td><code>VOUT_CURRENT_LIMIT_MA</code></td>
+<td>Kept as <code>40032</code>.</td>
+</tr>
+<tr>
+<td><code>40003</code></td>
+<td><code>OVER_TEMP_THRESHOLD_C</code></td>
+<td>Kept as <code>40031</code>, in tenths of a degree.</td>
+</tr>
+<tr>
+<td><code>40004</code></td>
+<td><code>COMMS_WATCHDOG_TIMEOUT_S</code></td>
+<td>Not on Modbus. Set with <code>config set timeout</code> from the console.</td>
+</tr>
+<tr>
+<td><code>40005</code></td>
+<td><code>MODBUS_SLAVE_ADDRESS</code></td>
+<td>Read-only at <code>40105</code>. Set with <code>config set address</code> from the console.</td>
+</tr>
+<tr>
+<td><code>40006</code></td>
+<td><code>MODBUS_BAUD_CODE</code></td>
+<td>Read-only at <code>40106</code>, as a rate. Set with <code>config set baud</code> from the console.</td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../use_cases_commands/" class="btn btn-neutral float-left" title="Use cases, user stories & commands"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../open_issues/" class="btn btn-neutral float-right" title="Open issues">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../use_cases_commands/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../open_issues/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../javascripts/mermaid.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

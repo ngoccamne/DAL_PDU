@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../../img/favicon.ico" />
+    <title>Unit tests - DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="../../css/theme.css" />
+    <link rel="stylesheet" href="../../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Unit tests";
+        var mkdocs_page_input_path = "code_implementation\\unit_tests.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="../.." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../current_firmware/">Current firmware architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../code_architecture/">Code architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../scheduler_design/">Scheduler design</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../command_reference/">Current command reference</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../hardware_overview/">Hardware overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../software_requirements/">Software requirements</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../use_cases_commands/">Use cases, user stories & commands</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../modbus_implementation/">Modbus RTU implementation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../open_issues/">Open issues</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../../mode_state_machine/">Mode state machine</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul class="current">
+                  <li class="toctree-l1"><a class="reference internal" href="../versioning/">Versioning</a>
+                  </li>
+                  <li class="toctree-l1 current"><a class="reference internal current" href="#">Unit tests</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#how-to-run">How to run</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#prerequisites">Prerequisites</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run-every-test">Run every test</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#run-one-test">Run one test</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#remove-the-executables">Remove the executables</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#path-on-windows">PATH on Windows</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#the-test-programs">The test programs</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#scheduler-and-fifo">Scheduler and FIFO</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#commands-and-the-console">Commands and the console</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#hardware-drivers-and-board-support">Hardware drivers and board support</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#application-logic">Application logic</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#support-files">Support files</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#adding-a-test">Adding a test</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#what-the-tests-do-not-cover">What the tests do not cover</a>
+    </li>
+    </ul>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../..">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="../.." class="icon icon-home" aria-label="Docs"></a></li>
+          <li class="breadcrumb-item">Code Implementation</li>
+      <li class="breadcrumb-item active">Unit tests</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="unit-tests">Unit tests</h1>
+<p>The firmware is tested on the host, with a PC C compiler. The tests build the production source files for the modules they cover, and replace the hardware with fakes. They do not run on the ATmega128A, so timing, interrupt load, and electrical behaviour still need a bench check.</p>
+<p>All test programs are in <code>tests/unit/</code>. The fakes for the AVR headers are in <code>tests/support/</code>, and the test build is <code>tests/Makefile</code>.</p>
+<h2 id="how-to-run">How to run</h2>
+<h3 id="prerequisites">Prerequisites</h3>
+<ul>
+<li>GNU Make and a host C compiler. The project uses MSYS2 <code>gcc</code> and GnuWin32 <code>make</code>.</li>
+<li>Python 3, on the PATH. The build runs <code>tools/gen_build_id.py</code> before it compiles anything.</li>
+<li>Compiler flags: <code>-std=gnu99 -Wall -Wextra -Werror</code>. A warning fails the build.</li>
+</ul>
+<h3 id="run-every-test">Run every test</h3>
+<p>From the PDU folder:</p>
+<pre><code>make -C tests test
+</code></pre>
+<p>The first step writes <code>build_id.h</code>. Each test program then builds and runs in turn. A passing program prints one line:</p>
+<pre><code>scheduler tests passed
+...
+clock tests passed
+</code></pre>
+<p>A failing check prints the file, line, and expression, then the build stops:</p>
+<pre><code>unit/test_app_clock.c:126: strcmp(console, &quot;TIME unset source=UNSET\r\n&quot;) == 0
+make: *** [test] Error 1
+</code></pre>
+<h3 id="run-one-test">Run one test</h3>
+<pre><code>cd tests
+make test_app_clock.exe
+./test_app_clock.exe
+</code></pre>
+<p>Run <code>make &lt;name&gt;.exe</code> first, then the executable. Each target is listed in the Makefile.</p>
+<h3 id="remove-the-executables">Remove the executables</h3>
+<pre><code>make -C tests clean
+</code></pre>
+<h3 id="path-on-windows">PATH on Windows</h3>
+<p>Atmel Studio and GnuWin32 both put a <code>gcc</code> or <code>make</code> on the PATH that may not match the host toolchain. Run the tests with a clean PATH:</p>
+<pre><code>export PATH=/c/msys64/mingw64/bin:/usr/bin:/c/Windows/System32
+&quot;/c/Program Files (x86)/GnuWin32/bin/make.exe&quot; test
+</code></pre>
+<h2 id="the-test-programs">The test programs</h2>
+<p>The table lists each program, the module it tests, and what it covers. The count is the number of test functions in the file, where the file uses them. Some files run one sequence of checks from <code>main</code>.</p>
+<h3 id="scheduler-and-fifo">Scheduler and FIFO</h3>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th style="text-align: right;">Tests</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_scheduler</code></td>
+<td style="text-align: right;">9</td>
+<td>The per-task period scheduler: tick, timers, task lifecycle, stop and resume, period changes, capacity, and coalescing of pending runs. Built with the normal configuration.</td>
+</tr>
+<tr>
+<td><code>test_scheduler_semaphore</code></td>
+<td style="text-align: right;">(same file)</td>
+<td>The same checks, built with <code>USE_SCH_SEMAPHORE</code>.</td>
+</tr>
+<tr>
+<td><code>test_fifo</code></td>
+<td style="text-align: right;">4</td>
+<td>The byte FIFO: caller storage, several capacities, full and empty, wraparound, clear, and independent instances.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="commands-and-the-console">Commands and the console</h3>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th style="text-align: right;">Tests</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_command_line</code></td>
+<td style="text-align: right;">7</td>
+<td>The command parser: argument splitting, the argument limit, unknown commands, <code>help</code>, <code>version</code> (with the build), LED timing, I2C argument checks, and handler error codes.</td>
+</tr>
+<tr>
+<td><code>test_command_eeprom</code></td>
+<td style="text-align: right;">main</td>
+<td>The <code>eeprom</code> command: probe, read, and write, with argument checks.</td>
+</tr>
+<tr>
+<td><code>test_command_system</code></td>
+<td style="text-align: right;">8</td>
+<td>The <code>status</code>, <code>reset</code>, and <code>persist_reset</code> commands. <code>persist_reset internal</code> and <code>persist_reset external</code> are separate: internal needs a restart (outputs off first) and external does not, and a failed external erase is reported without restarting. Each needs its scope and <code>confirm</code>, and the reply text is exact.</td>
+</tr>
+<tr>
+<td><code>test_app_main</code></td>
+<td style="text-align: right;">main</td>
+<td>Startup and the whole firmware loop, against the real <code>app_main.c</code>. Covers UART0 and console pins and settings, the TWI prescaler, the Timer0 tick, the task periods, command routing between the two ports, LED and heartbeat behaviour, watchdog check-ins, the 5 ms Modbus task, and automatic TRANS shutdown on a fault. The simulated I2C bus persists the TPS55287's feedback register so <code>trans on</code>'s external-feedback write-then-verify is exercised for real.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="hardware-drivers-and-board-support">Hardware drivers and board support</h3>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th style="text-align: right;">Tests</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_uart_drivers</code></td>
+<td style="text-align: right;">7</td>
+<td>USART0, the software UART, the console UART, and board-level UART dispatch. Uses fake AVR registers and calls the interrupt handlers directly.</td>
+</tr>
+<tr>
+<td><code>test_do</code></td>
+<td style="text-align: right;">2</td>
+<td>The discrete output API on ports A, B, and G.</td>
+</tr>
+<tr>
+<td><code>test_i2c_bus</code></td>
+<td style="text-align: right;">4</td>
+<td>I2C ACK and NACK handling, timeouts, bus recovery, and the fault address reported to the power logic.</td>
+</tr>
+<tr>
+<td><code>test_eeprom24c04</code></td>
+<td style="text-align: right;">main</td>
+<td>The 24C04 EEPROM driver: reads, writes, pages, and write-protect.</td>
+</tr>
+<tr>
+<td><code>test_tps55287</code></td>
+<td style="text-align: right;">main</td>
+<td>The TPS55287 regulator: dual address detection, reference conversion, external-feedback verification before setpoint writes and output enable, safe correction of a changed feedback register while VOUT is on, and the TRANS interlock.</td>
+</tr>
+<tr>
+<td><code>test_pac1934</code></td>
+<td style="text-align: right;">1</td>
+<td>The PAC1934 rail monitor: which device owns a bus fault. A regulator timeout is an ERROR in NORMAL and WARNING, and a WARNING in MANUAL, but only while TRANS is on. Other devices are WARNING.</td>
+</tr>
+<tr>
+<td><code>test_temperature</code></td>
+<td style="text-align: right;">3</td>
+<td>The NTC conversion, the temperature task, and the <code>temp</code> command.</td>
+</tr>
+<tr>
+<td><code>test_watchdog</code></td>
+<td style="text-align: right;">4</td>
+<td>The application watchdog: the five clients, the TPL5010 WAKE and DONE pins, and the latched no-feed state after a missed check-in.</td>
+</tr>
+<tr>
+<td><code>test_modbus_port</code></td>
+<td style="text-align: right;">main</td>
+<td>The USART1 RS-485 port: 9600 baud setup, the DIR pin held through TX complete, RX callbacks, the Timer1 RTU timeout, and the baud limits.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="application-logic">Application logic</h3>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th style="text-align: right;">Tests</th>
+<th>Covers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>test_modbus</code></td>
+<td style="text-align: right;">main</td>
+<td>The Modbus register map: holding and input registers, coil and discrete reads, the LED and mode registers, limits, rail telemetry, boot information, the clock, the event select, and the build code.</td>
+</tr>
+<tr>
+<td><code>test_app_mode</code></td>
+<td style="text-align: right;">5</td>
+<td>The operating mode: the self-test mapping, the mode order (MANUAL, ERROR, WARNING, NORMAL, revised 2026-10-15 so MANUAL outranks ERROR), that <code>mode manual</code> is reachable from ERROR while <code>mode normal</code> still isn't until the cause clears, the Modbus link-loss timeout and that it raises WARNING without changing mode priority, and the retry rules.</td>
+</tr>
+<tr>
+<td><code>test_fault_latch</code></td>
+<td style="text-align: right;">main</td>
+<td>PC4/PC0 fault persistence, 50 ms debounce and brief-glitch rejection, EEPROM latch and clear behavior, NORMAL shutdown, MANUAL reporting without software shutdown, and regulator probing used by a normal-mode health check.</td>
+</tr>
+<tr>
+<td><code>test_app_limits</code></td>
+<td style="text-align: right;">15</td>
+<td>Over-temperature and overcurrent limits: the trip counts, the NORMAL-only shutdown, the persisted limit ERROR, the <code>limit</code> command, and the event ring.</td>
+</tr>
+<tr>
+<td><code>test_app_config</code></td>
+<td style="text-align: right;">7</td>
+<td>The configuration record: defaults, damaged or invalid records falling back, the <code>config</code> commands, <code>config_reset confirm</code>, and the link timeout.</td>
+</tr>
+<tr>
+<td><code>test_app_boot</code></td>
+<td style="text-align: right;">8</td>
+<td>Boot causes from the reset flags, the client-watchdog note, the COMMAND cause, the 10-entry boot history, and <code>bootinfo</code>.</td>
+</tr>
+<tr>
+<td><code>test_app_setpoint</code></td>
+<td style="text-align: right;">8</td>
+<td>The VOUT readback check: the 2 s settle, the 5 % tolerance with a 100 mV floor, three samples before a mismatch, the setpoint change restarting the settle, and no check with outputs off.</td>
+</tr>
+<tr>
+<td><code>test_app_clock</code></td>
+<td style="text-align: right;">12</td>
+<td>The software clock: unset until set, the tick advance, the calendar conversion, the <code>time</code> command, the 15-minute checkpoint, the restore from the latest slot, and the clock source on events.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="support-files">Support files</h3>
+<table>
+<thead>
+<tr>
+<th>File</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tests/support/avr/io.h</code>, <code>interrupt.h</code></td>
+<td>Fake AVR registers and pins. Pin defines are the host values, for example <code>PC0 0</code>.</td>
+</tr>
+<tr>
+<td><code>tests/support/util/atomic.h</code></td>
+<td>A single-threaded <code>ATOMIC_BLOCK</code> for the host. It doesn't check interrupt safety.</td>
+</tr>
+<tr>
+<td><code>tests/support/util/delay.h</code></td>
+<td><code>_delay_ms</code> as a no-op.</td>
+</tr>
+<tr>
+<td><code>tests/support/util/twi.h</code></td>
+<td>TWI register stand-ins.</td>
+</tr>
+<tr>
+<td><code>tests/support/fake_clock_nvm.c</code></td>
+<td>An in-RAM stand-in for the clock checkpoint ring in internal EEPROM.</td>
+</tr>
+</tbody>
+</table>
+<p>Most tests replace the BSP with fakes. For example, <code>test_app_limits</code> fakes the EEPROM. The fakes live in each test file, so a test controls exactly what the module under test sees.</p>
+<h2 id="adding-a-test">Adding a test</h2>
+<ol>
+<li>Add <code>tests/unit/test_&lt;name&gt;.c</code>. Use the <code>CHECK(expr)</code> macro, which counts failures and prints the first failing line.</li>
+<li>Add a target for it in <code>tests/Makefile</code>. List the production sources it needs, and the fakes it doesn't link.</li>
+<li>Add the executable to <code>TARGETS</code>, and to the <code>test</code> rule.</li>
+<li>Run <code>make -C tests test</code>. The new test must pass before it is committed.</li>
+</ol>
+<p>Keep each program to one module. A program that needs many modules usually needs fakes for the rest.</p>
+<h2 id="what-the-tests-do-not-cover">What the tests do not cover</h2>
+<ul>
+<li><strong>Interrupt timing and load.</strong> The atomic shim doesn't model interrupt safety, and the tests don't measure how long an interrupt takes on the MCU.</li>
+<li><strong>Electrical behaviour.</strong> I2C rise time, RS-485 bias and timing, and the eFuse thresholds need a bench check.</li>
+<li><strong>The bus.</strong> The TWI and RS-485 tests use registers, not a real bus. A real master is needed to check Modbus framing under load.</li>
+<li><strong>The regulator and the rails.</strong> The TPS55287 output and feedback are not calibrated on the host.</li>
+<li><strong>Timing budgets.</strong> The tests check values computed from <code>F_CPU</code> (12 MHz). They don't measure real timing on the board.</li>
+</ul>
+<p>Run the tests after every change, and check the board items above on the hardware before a bring-up.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../versioning/" class="btn btn-neutral float-left" title="Versioning"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../versioning/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+  </span>
+</div>
+    <script src="../../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "../..";</script>
+    <script src="../../js/theme_extra.js"></script>
+    <script src="../../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../../javascripts/mermaid.js"></script>
+      <script src="../../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

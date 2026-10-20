@@ -1,0 +1,473 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Open issues - DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Open issues";
+        var mkdocs_page_input_path = "open_issues.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../current_firmware/">Current firmware architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../code_architecture/">Code architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../scheduler_design/">Scheduler design</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../command_reference/">Current command reference</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../hardware_overview/">Hardware overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../software_requirements/">Software requirements</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../use_cases_commands/">Use cases, user stories & commands</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../modbus_implementation/">Modbus RTU implementation</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Open issues</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#high-priority">High priority</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#medium-priority">Medium priority</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#low-priority">Low priority</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#dependencies">Dependencies</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../mode_state_machine/">Mode state machine</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/versioning/">Versioning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/unit_tests/">Unit tests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Open issues</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="open-issues">Open issues</h1>
+<p>This page lists the work still open against the requirements, use cases, and user stories in
+<a href="../software_requirements/">Software requirements</a> and <a href="../use_cases_commands/">Use cases, user stories &amp; commands</a>.
+Status is as of 2026-10-05, checked against the firmware. The per-requirement status tables are in
+<a href="../software_requirements/#7-implementation-status">Software requirements §7</a>.</p>
+<p>Priority is set by safety impact first, then by how much other work depends on the item.</p>
+<ul>
+<li><strong>High</strong>: affects protection, failsafe behavior, or a use case the OBC relies on.</li>
+<li><strong>Medium</strong>: needed for the requirement to be fully met, but the system is still safe without it.</li>
+<li><strong>Low</strong>: documentation, verification, or cleanup.</li>
+</ul>
+<h2 id="high-priority">High priority</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Issue</th>
+<th>Requirements</th>
+<th>Use cases / stories</th>
+<th>Next step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OI-01</td>
+<td><strong>Resolved 2026-10-05.</strong> Fault latch and clear. A fault that switches TRANS off is latched in the ATmega128A internal EEPROM and survives reset.</td>
+<td><code>PROT-023</code>, <code>PROT-020</code></td>
+<td><code>UC-4</code>; "fault latches" story</td>
+<td>Cleared by Modbus coil <code>00003</code> or <code>fault clear</code>. <code>trans on</code> is refused while latched. See <a href="../modbus_implementation/">Modbus RTU implementation</a> and <a href="../command_reference/">Current command reference</a>.</td>
+</tr>
+<tr>
+<td>OI-02</td>
+<td><strong>Resolved 2026-10-05.</strong> Mode model: NORMAL, MANUAL, WARNING, and ERROR. The mode is derived from the regulator flag, the limit error, the manual request, the PAC1934 status, and the fault latch.</td>
+<td><code>PWR-011</code>, <code>PWR-015</code>, <code>PROT-050</code>, <code>MON-033</code></td>
+<td><code>UC-8</code></td>
+<td>Revise <code>PROT-050</code> in the SRS, since the retry command now exits ERROR. Bootloader mode is still open under OI-16. See <a href="../mode_state_machine/">Mode state machine</a>.</td>
+</tr>
+<tr>
+<td>OI-03</td>
+<td><strong>Resolved 2026-10-05, revised 2026-10-15.</strong> Modbus link loss (default 5 s without a request) is now a WARNING cause (<code>mode get</code>'s <code>link=</code>) and no longer turns outputs off or latches anything by itself; see <code>SRS-COM-045</code>. Previously it turned <code>VOUT</code> and the transducer branch off while leaving the mode unchanged — decided to drop that, since the only thing that was tripping it in practice was console-only bench use with no Modbus traffic, not a real lost-link condition in the field.</td>
+<td><code>COM-045</code>, <code>WDT-080</code></td>
+<td>"fail safe on lost Modbus" story</td>
+<td>Watchdog client coverage for Modbus is still open under OI-08. If a real field deployment needs the output shutdown back, it would need to be reintroduced deliberately, not inferred from this entry.</td>
+</tr>
+<tr>
+<td>OI-04</td>
+<td><strong>Resolved 2026-10-05 with defaults.</strong> Overcurrent in NORMAL mode: 1000 mA on VOUT (decided 2026-10-06) or +5_TRANS for three samples turns outputs off, enters ERROR, and logs a WARNING event. Limits are set with <code>limit</code> and stored in internal EEPROM.</td>
+<td><code>PROT-022</code>, <code>CFG-060</code></td>
+<td><code>UC-4</code></td>
+<td>Confirm the default on the bench. The limits are on Modbus <code>40031</code>–<code>40033</code>. The map is aligned under OI-14.</td>
+</tr>
+<tr>
+<td>OI-05</td>
+<td><strong>Resolved 2026-10-05 with defaults.</strong> Over-temperature in NORMAL mode: 85.0 °C for two samples turns outputs off, enters ERROR, and logs a WARNING event. The threshold is set with <code>limit temp</code> and stored in internal EEPROM.</td>
+<td><code>PROT-021</code>, <code>CFG-060</code></td>
+<td><code>UC-4</code></td>
+<td>Confirm the default on the bench. The threshold is on Modbus <code>40031</code>. The map is aligned under OI-14.</td>
+</tr>
+<tr>
+<td>OI-06</td>
+<td><strong>Resolved 2026-10-06.</strong> The rail monitor checks the PAC1934 VOUT voltage against the commanded setpoint once a second, while TRANS and VOUT are on. Each judged sample must be within 5 % of the setpoint (at least 100 mV). Three judged samples out of tolerance flag a WARNING and log <code>SETPOINT_MISMATCH</code>. The first two checks after a change are not judged.</td>
+<td><code>PWR-014</code>, <code>COM-040</code></td>
+<td><code>UC-1</code>; "read back actual voltage" story</td>
+<td>None open. Confirm the tolerance and settling on the bench.</td>
+</tr>
+<tr>
+<td>OI-31</td>
+<td><strong>Resolved 2026-10-15.</strong> The TPS55287 (U5) is behind the TRANS eFuse, which stays off at boot by design, so it could not answer the startup self-test, which unconditionally latched ERROR on every boot and then blocked <code>trans on</code>/<code>tps55287 on</code> from ever succeeding (<code>AppMode_Get() != APP_MODE_ERROR</code> gates <code>AppPower_SetTrans(true)</code>). The one-second rail monitor made it worse: it kept polling the TPS55287 even while TRANS was correctly off at idle, re-latching ERROR on the first pass. The self-test no longer probes the TPS55287; the regulator is instead checked on demand (<code>AppPower_EnsureRegulatorOn</code>) the first time TRANS is enabled, from <code>trans on</code>, <code>tps55287 set</code>/<code>on</code>, or the equivalent Modbus writes (coil <code>00001</code>, holding <code>40001</code>). The rail monitor now only polls while TRANS is on. <code>mode retry</code> had the same deadlock one level up: it probed the chip directly (<code>BSP_TPS55287_Detect</code>) without powering TRANS, so <code>regulator_ok</code> was always false while TRANS was off, and since <code>AppMode_Retry</code> only clears a cause when both the regulator and the limits check out, a persisted <strong>limit</strong> ERROR from before a reset (EEPROM-backed, unrelated to the regulator) could never be cleared either as long as TRANS stayed off. <code>mode retry</code> now calls <code>AppPower_ProbeRegulator()</code>, which powers TRANS just long enough to probe (skipping the probe entirely if the eFuse fault is latched) and restores it to how it was found either way.</td>
+<td><code>PWR-011</code>, <code>PROT-050</code></td>
+<td><code>UC-1</code>, <code>UC-8</code></td>
+<td>None open. Re-arming the TPS55287's feedback/voltage registers after a power-cycle is now done too (OI-32). See <a href="../mode_state_machine/">Mode state machine</a>.</td>
+</tr>
+<tr>
+<td>OI-32</td>
+<td><strong>Resolved 2026-10-15.</strong> This board wires an external feedback divider (R22 = 102 kΩ, R30 = 11.3 kΩ to GND; ratio ≈ 0.0997, confirmed on hardware), but the TPS55287 resets to internal feedback (register <code>0x04</code> = <code>0x03</code>) every time its <code>EN</code>/UVLO drops, and nothing ever wrote that register — so after any TRANS power-cycle (the normal idle-off case, every time, after OI-31), the chip was running the wrong ratio. The driver rejected the external case outright (<code>TPS55287_SetVoltageMv</code>/<code>GetVoltageMv</code> returned false whenever the FB bit was set), so this was invisible rather than dangerous as long as nothing wrote register <code>0x04</code> to <code>0x80</code> manually; if it had been written, the chip would have used the external ratio's math nowhere in the firmware, risking the wrong output voltage (see the TPS55287 safety review discussion, ~21 V from a 12 V command in the worst case). <code>TPS55287_SetVoltageMv</code>/<code>GetVoltageMv</code> now compute against either ratio, selected by the FB bit already read from the chip. <code>AppPower_SetTrans(true)</code>/<code>AppPower_EnsureRegulatorOn()</code> now write register <code>0x04</code> to <code>0x80</code> and read it back to confirm, right after the presence probe, every time TRANS powers on — so the chip is always in external feedback before <code>tps55287 set</code>/<code>on</code> or the equivalent Modbus write can run.</td>
+<td><code>PWR-010</code>, <code>PWR-013</code>, assumption <code>A-4</code></td>
+<td><code>UC-1</code></td>
+<td>Confirm the 0.0997 ratio and the ~12 V range against a bench measurement, per <code>A-4</code>; the resistor values are not yet independently verified beyond what was reported.</td>
+</tr>
+<tr>
+<td>OI-33</td>
+<td><strong>Decided 2026-10-15.</strong> <code>BSP_Power_SetTrans(true)</code> and <code>BSP_TPS55287_SetEnabled(true)</code> no longer check the live PC4/PC0 pins before enabling; only a <em>latched</em> fault still refuses (<code>s_latch</code> in <code>AppPower_SetTrans</code>), which is what <code>SRS-PWR-015</code> actually requires ("shall not enable ... while a fault is latched"). <code>SRS-PWR-015</code> and <code>SRS-PROT-023</code> are otherwise unchanged and still enforced: a real, ongoing fault is still caught, latched, and shuts TRANS/VOUT back off by the unchanged 6 ms <code>AppPower_Update</code> poll, within one cycle of the enable attempt. The only effect is a narrow race window: a fault that is live but not yet latched no longer makes that single <code>trans on</code>/<code>tps55287 on</code> call itself fail; it succeeds momentarily and is then caught and reversed by the next poll. Requested to stop a live-but-unlatched fault from refusing re-enable during bench bring-up.</td>
+<td><code>PWR-015</code>, <code>PROT-023</code></td>
+<td><code>UC-4</code></td>
+<td>None open. If the race window itself (a brief, true enable before the next 6 ms poll) is unacceptable, the removed pre-checks would need to come back.</td>
+</tr>
+<tr>
+<td>OI-34</td>
+<td><strong>Decided 2026-10-15.</strong> MANUAL now outranks ERROR in <code>AppMode_Get()</code> (checked first), and <code>AppMode_RequestManual()</code> no longer refuses while <code>s_regulator_error</code> is set. Previously, a stuck regulator/limit ERROR (for example from <code>mode retry</code> genuinely failing, not just the OI-31 case) left no way out at all: <code>mode manual</code> was refused for the same reason <code>trans on</code> was, so the operator had no path to take manual control and work around a stuck automatic retry. Once MANUAL is requested, <code>AppPower_SetTrans</code>'s <code>AppMode_Get() != APP_MODE_ERROR</code> gate passes, so <code>trans on</code>/<code>tps55287 on</code>/the equivalent Modbus writes work directly, regardless of the regulator/limit cause underneath — consistent with MANUAL already disabling automatic regulator monitoring (<code>AppMode_RegulatorMonitored()</code>). The eFuse latch gate (<code>s_latch</code>, OI-33) is untouched and still refuses regardless of mode. <code>mode retry</code> still clears the underlying regulator/limit cause but does not by itself exit MANUAL; <code>mode normal</code> is still refused until that cause is actually clear.</td>
+<td><code>PWR-011</code>, <code>PWR-015</code>, <code>PROT-050</code></td>
+<td><code>UC-8</code></td>
+<td>None open. See <a href="../mode_state_machine/">Mode state machine</a> and software requirements §3.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="medium-priority">Medium priority</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Issue</th>
+<th>Requirements</th>
+<th>Use cases / stories</th>
+<th>Next step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OI-07</td>
+<td><strong>Resolved 2026-10-06.</strong> The commanded setpoint, the four rails' voltage and current, and the four rails' power are on Modbus <code>30023</code>–<code>30038</code>, and in the <code>telemetry</code> command. Power is in 10 mW units. Board temperature is on <code>30021</code>.</td>
+<td><code>COM-040</code>, <code>MON-030</code></td>
+<td><code>UC-3</code>; "read back current" story</td>
+<td>None open.</td>
+</tr>
+<tr>
+<td>OI-08</td>
+<td><strong>Resolved 2026-10-05.</strong> Five clients now check in: console and heartbeat (200 ms), Modbus (200 ms, 5 ms task), and the rail monitor and temperature task (1500 ms, which covers their 1 s period). A client that stops is recorded in the boot record and the unit resets.</td>
+<td><code>WDT-080</code></td>
+<td><code>UC-7</code></td>
+<td>Confirm the timeouts against the TPL5010 window (OI-25).</td>
+</tr>
+<tr>
+<td>OI-09</td>
+<td><strong>Resolved 2026-10-05.</strong> The reset flags are read first at startup. A watchdog fault is kept in a <code>.noinit</code> RAM note and written to the boot record at the next boot. The last 10 boots are kept in internal EEPROM. <code>bootinfo</code> shows the last boot, and <code>bootinfo history</code> lists the stored boots. The last boot is also on Modbus input registers <code>30032</code>–<code>30034</code>.</td>
+<td><code>WDT-081</code></td>
+<td><code>UC-7</code>; "event log" story</td>
+<td>None open.</td>
+</tr>
+<tr>
+<td>OI-10</td>
+<td><strong>Partly resolved 2026-10-06.</strong> Events are a 32-slot ring in the 24C04, stamped with the software clock (<code>SRS-MON-034</code>). Limit, I2C, setpoint, configuration, and clock events are logged. The OBC reads the newest event, or any event by sequence, over Modbus (<code>40050</code>, <code>30041</code>–<code>30047</code>). eFuse faults, regulator faults, mode changes, link loss, and resets are not logged yet.</td>
+<td><code>MON-032</code>, <code>MON-034</code>, <code>WDT-081</code></td>
+<td><code>UC-6</code>; "event log" story</td>
+<td>Log the remaining events through <code>AppEvent_Log</code>. Log a boot event after EEPROM init, for <code>WDT-081</code>. Add a rate limit and a RAM queue for the EEPROM writes.</td>
+</tr>
+<tr>
+<td>OI-11</td>
+<td><strong>Resolved 2026-10-05.</strong> Configuration is in internal EEPROM with a checksum, a version byte, and compiled defaults. The record holds the Modbus slave address, the baud code, and the communications timeout. The limits share the EEPROM. <code>config</code>, <code>config set</code>, and <code>config_reset confirm</code> set them, and a blank or damaged record falls back to the defaults.</td>
+<td><code>CFG-060</code>, <code>CFG-062</code>, <code>COM-041</code></td>
+<td><code>UC-6</code></td>
+<td>None open. Writes to internal EEPROM are not gated, by decision.</td>
+</tr>
+<tr>
+<td>OI-12</td>
+<td><strong>Resolved 2026-10-05.</strong> The Modbus slave address and baud rate come from the configuration record. Set them with <code>config set</code>. They take effect at the next boot.</td>
+<td><code>COM-041</code></td>
+<td><code>UC-6</code></td>
+<td>None open.</td>
+</tr>
+<tr>
+<td>OI-13</td>
+<td><strong>Resolved 2026-10-06.</strong> The firmware names are the reference. <code>status</code> and <code>reset confirm</code> are added. The design names <code>STAT</code>, <code>FAULT?</code>, <code>FAULT CLR</code>, <code>LOG?</code>, <code>TEMP?</code>, <code>ILIM</code>, and <code>RESET</code> are dropped, and the mapping is in <a href="../command_reference/#design-command-names">Command reference</a>. The design command table itself is not in the docs.</td>
+<td><code>COM-042</code>, <code>COM-043</code></td>
+<td><code>UC-6</code>; "technician console" story</td>
+<td>Restore the design table if a copy exists, so the superseded section has a source.</td>
+</tr>
+<tr>
+<td>OI-14</td>
+<td><strong>Resolved 2026-10-06.</strong> The implemented Modbus map is the reference. The differences from the design draft and each decision are in <a href="../modbus_implementation/#design-differences">Modbus RTU implementation</a>.</td>
+<td><code>COM-040</code></td>
+<td><code>UC-1</code>, <code>UC-2</code>, <code>UC-3</code></td>
+<td>None open.</td>
+</tr>
+<tr>
+<td>OI-15</td>
+<td><strong>Resolved 2026-10-06.</strong> The build identity is generated from git (<code>tools/gen_build_id.py</code>). <code>version</code> prints it, and Modbus <code>40107</code>–<code>40108</code> carry it. Release copies are named with the version and the build (<code>tools/release.py</code>).</td>
+<td><code>GEN-092</code></td>
+<td>—</td>
+<td>Add the build ID to telemetry if the OBC needs it. The bank header comes with OI-16.</td>
+</tr>
+<tr>
+<td>OI-16</td>
+<td>Bootloader and dual-bank firmware update. Nothing is implemented: no image path, no CRC check, no bank switch, no confirm-or-rollback.</td>
+<td><code>BOOT-070</code> to <code>BOOT-076</code>, <code>CFG-061</code></td>
+<td><code>UC-5</code>; "firmware update without bricking" story</td>
+<td>Treat as its own milestone. Start with the flash layout (<code>BOOT-070</code>) and the bank header (<code>BOOT-071</code>).</td>
+</tr>
+<tr>
+<td>OI-17</td>
+<td>Calibration of the output range. The TPS55287 limits come from the driver, not from a calibration.</td>
+<td><code>PWR-013</code>, assumption <code>A-4</code></td>
+<td><code>UC-1</code></td>
+<td>Measure the output across the range on the bench. Record the calibrated safe range, and set it as the limit.</td>
+</tr>
+<tr>
+<td>OI-18</td>
+<td>Scheduler worst-case timing. Task dispatch latency is not measured, and overruns are coalesced without a count.</td>
+<td><code>GEN-090</code>, <code>GEN-091</code></td>
+<td>—</td>
+<td>Add a per-pass timing measurement and an overrun counter. See <a href="../scheduler_design/#9-risks-and-limits">Scheduler design §9</a> (R2, R3, R4).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="low-priority">Low priority</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Issue</th>
+<th>Requirements</th>
+<th>Use cases / stories</th>
+<th>Next step</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OI-19</td>
+<td>Debug UART exclusivity. Nothing keeps the debug UART inactive during PC104 operation.</td>
+<td><code>COM-005</code></td>
+<td>—</td>
+<td>Decide how the debug port is disabled in flight configuration. Implement the interlock or document the procedure.</td>
+</tr>
+<tr>
+<td>OI-20</td>
+<td><strong>Resolved 2026-10-06.</strong> <code>SRS-COM-030</code> is defined: RS-485 idle noise is handled by T3.5 framing, the address check, and the CRC, as <code>A-3</code> accepts the weak bias.</td>
+<td><code>COM-030</code></td>
+<td>—</td>
+<td>Bench check of the Modbus noise handling.</td>
+</tr>
+<tr>
+<td>OI-21</td>
+<td><strong>Resolved 2026-10-06.</strong> The RS-485 pins are PD2 (MCU RX), PD3 (MCU TX), and PD5 (DIR), confirmed on the board. <code>SRS-COM-002</code> is updated to match.</td>
+<td><code>COM-002</code></td>
+<td>—</td>
+<td>None open. The review schematic (rev 1.1.0) still shows PD4/PD5/PD6 and must be updated.</td>
+</tr>
+<tr>
+<td>OI-22</td>
+<td><strong>Resolved 2026-10-06.</strong> The Studio project already sets the FreeMODBUS include paths (<code>modbus\include</code>, <code>modbus\rtu</code>) and the defines <code>MB_ASCII_ENABLED=0</code> and <code>MB_FUNC_OTHER_REP_SLAVEID_ENABLED=0</code> in both configurations. Those defines are needed: <code>mbconfig.h</code> enables both by default, and their code calls <code>mbascii.c</code> and <code>mbfuncother.c</code>, which are not in the project. The project's 69 sources compile and link for the ATmega128A with these settings.</td>
+<td><code>COM-040</code> (build)</td>
+<td>—</td>
+<td>Confirm a clean build in the Studio IDE.</td>
+</tr>
+<tr>
+<td>OI-23</td>
+<td>Temperature reference. The ADC reference is assumed to be 5.000 V, and the module is not calibrated. The review BOM also has C59 (AREF) at 12 pF, against 100 nF in the schematic.</td>
+<td><code>MON-031</code>, <code>PROT-021</code></td>
+<td><code>UC-3</code></td>
+<td>Measure the 5 V rail on the bench, and check the reading against a reference temperature. Fit C59 as the schematic shows, then adjust the AVcc constant if needed.</td>
+</tr>
+<tr>
+<td>OI-24</td>
+<td>Hardware-dependent checks. The firmware is verified only on the host and in Proteus. The board items are: PC104 RS-232 direction (<code>IF-001</code>), RS-485 polarity and timing, I2C rise times, and the Proteus model's peripherals.</td>
+<td><code>COM-001</code>, <code>COM-002</code>, assumptions <code>A-1</code> to <code>A-5</code></td>
+<td>—</td>
+<td>Run bench tests for each item. Confirm the Proteus model includes the TPS55287, PAC1934, 24C04, TC1047A, and TPL5010.</td>
+</tr>
+<tr>
+<td>OI-25</td>
+<td><strong>Resolved 2026-10-05.</strong> The TPL5010 window is 10 s. The 1500 ms slow-client timeout and the 50 ms first check-in are both well inside it.</td>
+<td><code>WDT-080</code></td>
+<td><code>UC-7</code></td>
+<td>None open.</td>
+</tr>
+<tr>
+<td>OI-26</td>
+<td><strong>Resolved 2026-10-05.</strong> A TPS55287 I2C timeout sets ERROR while the regulator is monitored (NORMAL or WARNING), as PROT-050 requires. In MANUAL it sets only the WARNING cause, and the operator decides. A timeout from any other device sets WARNING until a transaction completes.</td>
+<td><code>PROT-050</code>, <code>PWR-010</code></td>
+<td><code>UC-8</code></td>
+<td>None open.</td>
+</tr>
+<tr>
+<td>OI-27</td>
+<td>The TWI recovery does not free a slave that holds SDA low. The bus stays faulted until the device releases it.</td>
+<td><code>WDT-080</code></td>
+<td><code>UC-7</code></td>
+<td>Add a 9-clock bus clear on timeout if a device is seen holding the bus.</td>
+</tr>
+<tr>
+<td>OI-28</td>
+<td><strong>Resolved 2026-10-06.</strong> PC4 is the 12V TRANS fault and PC0 the 12V_MCU fault. PC1 is not connected, and the firmware no longer reads it. The MCU-branch fault is latched, turns outputs off, and enters WARNING (<code>PROT-020</code>), and it is reported on <code>10002</code> and <code>30020</code> (<code>PROT-024</code>). The fault latch keeps its two bits, now PC4 and PC0.</td>
+<td><code>PROT-020</code>, <code>PROT-024</code>, <code>PWR-010</code></td>
+<td><code>UC-4</code>, <code>UC-8</code></td>
+<td>None open. Confirm the PC0 and PC4 levels on the board.</td>
+</tr>
+<tr>
+<td>OI-29</td>
+<td><strong>Resolved 2026-10-06.</strong> Pins confirmed on the board: PC4 is the 12 V TRANS fault, PC0 is the 12 V_MCU fault, and the TPL5010 WAKE is PB5. The review had PAC1934 INT on PC4; it is on PE7. The firmware polls the PAC1934 and does not use PE7.</td>
+<td><code>PROT-020</code>, <code>WDT-080</code></td>
+<td><code>UC-4</code>, <code>UC-7</code></td>
+<td>Correct the review pin table: PAC1934 INT on PE7, PC0 and PC2 added. The review package is outside this repo.</td>
+</tr>
+<tr>
+<td>OI-30</td>
+<td><strong>Resolved 2026-10-06.</strong> The console is the software UART on PE3/PE4. This is accepted for <code>MCU-001</code>, and no USART pair is used for it.</td>
+<td><code>COM-004</code></td>
+<td><code>UC-6</code></td>
+<td>P2 needs a defined pinout (<code>CON-002</code>) for bench use.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="dependencies">Dependencies</h2>
+<ul>
+<li>OI-02 (mode state machine) is needed by OI-01, OI-03, OI-04, OI-05, and OI-10.</li>
+<li>OI-11 (configuration record) is needed by OI-12 and OI-16. OI-04 and OI-05 use it for their limits, which are done.</li>
+<li>OI-16 (bootloader) owns the bank header that OI-15 needs.</li>
+<li>OI-07 and OI-14 were decided together on 2026-10-06. OI-28 fixes the fault inputs that OI-14 lists.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../modbus_implementation/" class="btn btn-neutral float-left" title="Modbus RTU implementation"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../mode_state_machine/" class="btn btn-neutral float-right" title="Mode state machine">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../modbus_implementation/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../mode_state_machine/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../javascripts/mermaid.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

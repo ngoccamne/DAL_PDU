@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Code architecture - DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Code architecture";
+        var mkdocs_page_input_path = "code_architecture.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../current_firmware/">Current firmware architecture</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Code architecture</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-layers">1. Layers</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#11-dependency-rules-as-implemented">1.1 Dependency rules as implemented</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-module-dependency-view">2. Module dependency view</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-startup-sequence">3. Startup sequence</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-task-inventory">4. Task inventory</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-data-flows">5. Data flows</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#51-tick-to-task">5.1 Tick to task</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#52-console-command">5.2 Console command</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#53-modbus-request">5.3 Modbus request</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#54-power-fault-response">5.4 Power fault response</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#55-telemetry">5.5 Telemetry</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#56-watchdog-handshake">5.6 Watchdog handshake</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-shared-state-and-who-touches-it">6. Shared state and who touches it</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-known-gaps-in-the-architecture">7. Known gaps in the architecture</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../scheduler_design/">Scheduler design</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../command_reference/">Current command reference</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../hardware_overview/">Hardware overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../software_requirements/">Software requirements</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../use_cases_commands/">Use cases, user stories & commands</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../modbus_implementation/">Modbus RTU implementation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../open_issues/">Open issues</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../mode_state_machine/">Mode state machine</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/versioning/">Versioning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/unit_tests/">Unit tests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Code architecture</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="code-architecture">Code architecture</h1>
+<p>This page describes how the current DAL_PDU firmware is layered, how data moves between
+modules, and which tasks own which state. It describes the code under
+<code>PDU/firmware/DAL_PDU/DAL_PDU/</code>. For the short overview see
+<a href="../current_firmware/">Current firmware architecture</a>; for the scheduler internals see
+<a href="../scheduler_design/">Scheduler design</a>.</p>
+<h2 id="1-layers">1. Layers</h2>
+<p>The source tree is organised in six numbered layers. Lower numbers are closer to the
+application; the <code>M</code> prefix is only a directory convention, not a build boundary.</p>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Path</th>
+<th>Contents</th>
+<th>Depends on</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M0 Application</td>
+<td><code>src/dev/M0_App/</code></td>
+<td>Startup (<code>app_main</code>), console, heartbeat LED, power/TRANS, power monitor, watchdog supervision, Modbus register callbacks</td>
+<td>M1, M2, M4</td>
+</tr>
+<tr>
+<td>M1 System</td>
+<td><code>src/dev/M1_Sys/</code></td>
+<td><code>Scheduler</code> (task and soft-timer service), <code>CommandLine</code> (parser, command table, command handlers), <code>SystemData</code> (shared status records)</td>
+<td>M2, M4</td>
+</tr>
+<tr>
+<td>M2 Board support</td>
+<td><code>src/dev/M2_BSP/</code></td>
+<td>Pin map (<code>dal_pdu_board.h</code>), UART ownership, timer ISR, I2C, power GPIO, watchdog pins, LED, Modbus port, TPS55287/PAC1934/24C04 board bindings</td>
+<td>M3, M4</td>
+</tr>
+<tr>
+<td>M3 Driver</td>
+<td><code>src/dev/M3_Driver/</code></td>
+<td><code>Component/</code> holds the AVR UART, software UART, I2C, and GPIO drivers. <code>Devices/</code> holds the TPS55287, PAC1934, and 24C04 chip drivers</td>
+<td>M4, AVR headers</td>
+</tr>
+<tr>
+<td>M4 Middleware</td>
+<td><code>src/dev/M4_MiddleWare/</code></td>
+<td>Byte FIFO, printf hook, FreeMODBUS (submodule)</td>
+<td>AVR headers only</td>
+</tr>
+</tbody>
+</table>
+<h3 id="11-dependency-rules-as-implemented">1.1 Dependency rules as implemented</h3>
+<p>The intended direction is strictly downward. The code does not fully keep that promise:</p>
+<table>
+<thead>
+<tr>
+<th>Observed dependency</th>
+<th>Where</th>
+<th>Assessment</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>M0 calls M2 directly (power GPIO, TPS55287, PAC1934, watchdog pins)</td>
+<td><code>app_power.c</code>, <code>app_modbus.c</code>, <code>app_power_monitor.c</code>, <code>app_watchdog.c</code></td>
+<td>Expected. M0 is the only caller that sequences the board.</td>
+</tr>
+<tr>
+<td>M1 command handlers call M2 BSP</td>
+<td><code>command_tps55287.c</code>, <code>command_pac1934.c</code>, <code>command_i2c.c</code>, <code>command_eeprom.c</code></td>
+<td>Expected for maintenance commands, but it means host tests must mock BSP.</td>
+</tr>
+<tr>
+<td>M2 owns the TPS55287 record</td>
+<td><code>bsp_tps55287.c</code> keeps <code>BSP_TPS55287_Status</code>, read by M0 and M1 through <code>BSP_TPS55287_GetStatus()</code></td>
+<td>Resolved 2026-10-06. M2 no longer writes into M1. The record is no longer in <code>SystemData</code>.</td>
+</tr>
+<tr>
+<td>M0 Modbus callbacks call M0 <code>app_power</code> and M1 <code>SystemData</code></td>
+<td><code>app_modbus.c</code></td>
+<td>Expected; both are in the application layer.</td>
+</tr>
+</tbody>
+</table>
+<p>Shared state lives in exactly one place. Most of it is in <code>SystemData</code>. The TPS55287 record is in its
+BSP module, which is the only writer. Commands, tasks, and Modbus callbacks read these records.
+No layer keeps a second copy of the same fact.</p>
+<h2 id="2-module-dependency-view">2. Module dependency view</h2>
+<pre><code class="language-mermaid">flowchart TB
+  subgraph M0[&quot;M0 Application&quot;]
+    MAIN[&quot;app_main&quot;]
+    CON[&quot;app_console&quot;]
+    HB[&quot;app_heartbeat&quot;]
+    PWR[&quot;app_power&quot;]
+    PMON[&quot;app_power_monitor&quot;]
+    WDG[&quot;app_watchdog&quot;]
+    MB[&quot;app_modbus&quot;]
+  end
+  subgraph M1[&quot;M1 System&quot;]
+    SCH[&quot;Scheduler&quot;]
+    CMD[&quot;CommandLine&quot;]
+    SD[&quot;SystemData&quot;]
+  end
+  subgraph M2[&quot;M2 Board support&quot;]
+    BTIM[&quot;bsp_timer&quot;]
+    BUART[&quot;bsp_uart&quot;]
+    BI2C[&quot;bsp_i2c&quot;]
+    BPWR[&quot;bsp_power&quot;]
+    BWD[&quot;bsp_watchdog&quot;]
+    BMB[&quot;bsp_modbus&quot;]
+    BTPS[&quot;bsp_tps55287&quot;]
+    BPAC[&quot;bsp_pac1934&quot;]
+    BEE[&quot;bsp_eeprom&quot;]
+  end
+  subgraph M4[&quot;M4 Middleware&quot;]
+    FIFO[&quot;FIFO&quot;]
+    FMB[&quot;FreeMODBUS&quot;]
+  end
+
+  MAIN --&gt; SCH
+  MAIN --&gt; BTIM
+  CON --&gt; CMD
+  CON --&gt; BUART
+  CON --&gt; FIFO
+  CON --&gt; WDG
+  HB --&gt; SD
+  HB --&gt; SCH
+  PWR --&gt; SD
+  PWR --&gt; BPWR
+  PWR --&gt; BTPS
+  PMON --&gt; SD
+  PMON --&gt; BPAC
+  WDG --&gt; SD
+  WDG --&gt; BWD
+  MB --&gt; FMB
+  MB --&gt; SD
+  MB --&gt; PWR
+  MB --&gt; BTPS
+  CMD --&gt; BTPS
+  CMD --&gt; BPAC
+  CMD --&gt; BI2C
+  CMD --&gt; BEE
+  CMD --&gt; SD
+  BTIM --&gt; SCH
+  BTPS --&gt; SD
+  BMB --&gt; FMB
+  BUART --&gt; FIFO
+</code></pre>
+<h2 id="3-startup-sequence">3. Startup sequence</h2>
+<p><code>main()</code> calls <code>APP_Main()</code>. Initialization runs with interrupts disabled. Interrupts are enabled
+only after the scheduler has its task table and Timer0 is running.</p>
+<pre><code class="language-mermaid">sequenceDiagram
+  participant M as main
+  participant A as APP_Initialize
+  participant S as Scheduler
+  participant T as Timer0
+  participant L as Main loop
+  M-&gt;&gt;A: APP_Main()
+  A-&gt;&gt;A: EEPROM init, UART board init, startup banners
+  A-&gt;&gt;A: SystemData_Init, AppPower_Init, I2C init
+  A-&gt;&gt;S: SCH_InitializeTaskTable(5 tasks)
+  A-&gt;&gt;A: Watchdog, console, heartbeat, Modbus init
+  A-&gt;&gt;A: AppWatchdog_Start (requires all clients registered)
+  A-&gt;&gt;T: BSP_Timer_Init1ms
+  A-&gt;&gt;S: SCH_StartScheduler
+  A--&gt;&gt;M: true
+  M-&gt;&gt;M: sei()
+  loop forever
+    L-&gt;&gt;S: SCH_HandleScheduledTask
+    L-&gt;&gt;L: APP_ModbusTask every 5 ms (AppModbus_Update, two eMBPoll calls)
+  end
+</code></pre>
+<p>If any step fails, <code>APP_Initialize</code> closes the UARTs and stops the scheduler, and most failure branches
+also call <code>BSP_Watchdog_Inhibit()</code>. <code>APP_Main</code> then spins with interrupts disabled. The external TPL5010 watchdog is then the only
+recovery path, which resets the MCU and retries startup.</p>
+<h2 id="4-task-inventory">4. Task inventory</h2>
+<p>These six tasks are the only scheduled work. Dispatch order is table index order, from
+<code>app_main.c</code>. All run from the main loop, never from an ISR.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Index</th>
+<th>Task</th>
+<th style="text-align: right;">Period</th>
+<th style="text-align: right;">First run (phase)</th>
+<th>Reads</th>
+<th>Writes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;">0</td>
+<td><code>AppConsole_Run</code></td>
+<td style="text-align: right;">10 ms</td>
+<td style="text-align: right;">0 ms</td>
+<td>UART0 and console RX FIFOs</td>
+<td>Console sessions, response FIFO, TX FIFOs, watchdog check-in; runs one parsed command per call</td>
+</tr>
+<tr>
+<td style="text-align: right;">1</td>
+<td><code>AppHeartbeat_Update</code></td>
+<td style="text-align: right;">20 ms</td>
+<td style="text-align: right;">0 ms</td>
+<td>Operating mode, <code>SystemData</code> heartbeat timing and enable</td>
+<td>LED pattern for the mode, soft timer <code>SCH_TIM_LED</code>, watchdog check-in</td>
+</tr>
+<tr>
+<td style="text-align: right;">2</td>
+<td><code>AppPower_Update</code></td>
+<td style="text-align: right;">6 ms</td>
+<td style="text-align: right;">3 ms</td>
+<td>PC4 and PC0 fault inputs, TRANS state</td>
+<td>TRANS GPIO and VOUT disable on fault, <code>SystemData</code> power status</td>
+</tr>
+<tr>
+<td style="text-align: right;">3</td>
+<td><code>AppPowerMonitor_Update</code></td>
+<td style="text-align: right;">1000 ms</td>
+<td style="text-align: right;">0 ms</td>
+<td>PAC1934 snapshot</td>
+<td><code>SystemData</code> power monitor status</td>
+</tr>
+<tr>
+<td style="text-align: right;">4</td>
+<td><code>AppWatchdog_Update</code></td>
+<td style="text-align: right;">10 ms</td>
+<td style="text-align: right;">0 ms</td>
+<td>Client check-in times, WAKE pin (PB5)</td>
+<td>DONE pin (PB6), wake status, fault latch</td>
+</tr>
+<tr>
+<td style="text-align: right;">5</td>
+<td><code>AppTemperature_Update</code></td>
+<td style="text-align: right;">1000 ms</td>
+<td style="text-align: right;">0 ms</td>
+<td>ADC channel 1 (PF1) through <code>BSP_NTC_ReadTenthsC</code></td>
+<td><code>SystemData</code> temperature status</td>
+</tr>
+<tr>
+<td style="text-align: right;">6</td>
+<td><code>APP_ModbusTask</code> (<code>AppModbus_Update</code>)</td>
+<td style="text-align: right;">5 ms</td>
+<td style="text-align: right;">0 ms</td>
+<td>USART1 RX frame and event queue, <code>SystemData</code> and TPS55287 records through the Modbus callbacks</td>
+<td><code>eMBPoll</code> replies, watchdog check-in</td>
+</tr>
+</tbody>
+</table>
+<p>The 6 ms power task and the 10 ms console task are not synchronized; the 3 ms phase keeps the first
+power check away from the first console pass.</p>
+<p>Two more pieces of work run every main-loop pass, outside the table:</p>
+<ul>
+<li><code>AppModbus_Update()</code> calls <code>eMBPoll()</code> twice, from the 5 ms task. A request needs two polls. This services the USART1 RX/TX event queue and the Modbus
+  callbacks, which read and write <code>SystemData</code>, call <code>AppPower_SetTrans()</code>, and call the TPS55287 BSP.</li>
+<li>The <code>printf</code> hook <code>_putchar</code> writes into the active console response owner, if one is set.</li>
+</ul>
+<h2 id="5-data-flows">5. Data flows</h2>
+<h3 id="51-tick-to-task">5.1 Tick to task</h3>
+<pre><code class="language-mermaid">flowchart LR
+  T0[&quot;Timer0 compare ISR\n1 ms&quot;] --&gt; RT[&quot;SCH_RunSystemTickTimer&quot;]
+  RT --&gt; EL[&quot;Each enabled task:\nelapsed_ms++\nready = TRUE when due&quot;]
+  RT --&gt; ST[&quot;Soft timers --&quot;]
+  ML[&quot;Main loop\nSCH_HandleScheduledTask&quot;] --&gt; CL[&quot;Read and clear ready\nunder ATOMIC_BLOCK&quot;]
+  CL --&gt; RUN[&quot;Call task function\nin index order&quot;]
+</code></pre>
+<p>The ISR never calls a task. It only sets <code>ready</code>. A task that is due twice before it runs runs once
+(see <a href="../scheduler_design/#6-coalescing">Scheduler design</a>).</p>
+<h3 id="52-console-command">5.2 Console command</h3>
+<pre><code class="language-mermaid">flowchart LR
+  RX0[&quot;USART0 RX ISR\nUART0 port&quot;] --&gt; RXF[&quot;RX FIFO&quot;]
+  RXS[&quot;Timer2 soft UART\nconsole port&quot;] --&gt; RXF
+  RXF --&gt; LINE[&quot;AppConsole_ReadSession\nassemble line, echo&quot;]
+  LINE --&gt; EX[&quot;AppConsole_Execute\nCmdLineProcess&quot;]
+  EX --&gt; H[&quot;Command handler\nfor one table row&quot;]
+  H --&gt; W[&quot;Command_OutputString\n-&gt; AppConsole_WriteResponse&quot;]
+  W --&gt; RSP[&quot;Shared response FIFO\n256 bytes&quot;]
+  RSP --&gt; FL[&quot;AppConsole_FlushOutput&quot;]
+  FL --&gt; TXW[&quot;BSP_UART_Write&quot;]
+  TXW --&gt; TXF[&quot;TX FIFO\nUART0 UDRE ISR or Timer2 ISR&quot;]
+</code></pre>
+<p>Only one port owns the response FIFO at a time, set when a command starts executing. A second
+port's line waits in its session until the owner finishes sending. <code>help</code> streams one table entry
+per pass through <code>Command_ContinueOutput</code>, so the 256-byte FIFO can drain between passes.</p>
+<h3 id="53-modbus-request">5.3 Modbus request</h3>
+<pre><code class="language-mermaid">flowchart LR
+  RX1[&quot;USART1 RX ISR&quot;] --&gt; PORT[&quot;FreeMODBUS port queue&quot;]
+  T1[&quot;Timer1 compare ISR\nRTU silence&quot;] --&gt; PORT
+  PORT --&gt; POLL[&quot;eMBPoll in the 5 ms Modbus task&quot;]
+  POLL --&gt; CB[&quot;eMBReg*CB callbacks\nin app_modbus.c&quot;]
+  CB --&gt; SD[&quot;SystemData&quot;]
+  CB --&gt; PW[&quot;AppPower_SetTrans&quot;]
+  CB --&gt; TPS[&quot;BSP_TPS55287 set/get&quot;]
+  POLL --&gt; TX1[&quot;USART1 TX ISR\nRS485 direction on PD5&quot;]
+</code></pre>
+<h3 id="54-power-fault-response">5.4 Power fault response</h3>
+<ol>
+<li><code>AppPower_Update</code> runs every 6 ms and reads PC4 and PC0.</li>
+<li>If either fault is active while TRANS is on, it disables VOUT first, then drops TRANS, and latches the fault in internal EEPROM until it is cleared.</li>
+<li>It publishes the new status to <code>SystemData</code>. Modbus and console <code>trans get</code> read that record.</li>
+<li>A console or Modbus request to turn TRANS on re-checks both faults before enabling PC2, and
+   returns <code>TRANS fault</code> if either is still active.</li>
+</ol>
+<p>The mode (NORMAL, MANUAL, WARNING, or ERROR) is derived from the self-test, the fault latch, the manual request, and the PAC1934 status. See <a href="../mode_state_machine/">Mode state machine</a>.</p>
+<h3 id="55-telemetry">5.5 Telemetry</h3>
+<p><code>AppPowerMonitor_Update</code> runs once per second. It calls <code>BSP_PAC1934_ReadSnapshot</code> and writes voltage,
+current, and power for four channels. The <code>pac1934</code> console command reads the record, and does not
+trigger a fresh conversion itself. The TPS55287 record is refreshed by BSP calls in the command and
+Modbus paths, not by a periodic task. It lives in M2, so it is read through <code>BSP_TPS55287_GetStatus()</code>.</p>
+<h3 id="56-watchdog-handshake">5.6 Watchdog handshake</h3>
+<pre><code class="language-mermaid">flowchart LR
+  C1[&quot;Console task\ncheck-in&quot;] --&gt; WS[&quot;Watchdog state\nlast check-in per client&quot;]
+  C2[&quot;Heartbeat task\ncheck-in&quot;] --&gt; WS
+  WS --&gt; WU[&quot;AppWatchdog_Update\nevery 10 ms&quot;]
+  WU --&gt;|&quot;all clients fresh&quot;| DONE[&quot;Pulse DONE high 100 ms\nPB6 to TPL5010&quot;]
+  WU --&gt;|&quot;client late or monitor late&quot;| FLT[&quot;Fault latch\nstop DONE pulses&quot;]
+  FLT --&gt; RST[&quot;TPL5010 resets MCU&quot;]
+</code></pre>
+<p>The client timeout is 200 ms for both clients. The monitor timeout is also 200 ms. A fault latch
+is permanent until reset.</p>
+<h2 id="6-shared-state-and-who-touches-it">6. Shared state and who touches it</h2>
+<table>
+<thead>
+<tr>
+<th>State</th>
+<th>Owner</th>
+<th>Writers</th>
+<th>Readers</th>
+<th>Concurrency rule</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SystemData</code> heartbeat, power, watchdog-wake, PAC1934, temperature records</td>
+<td>M1 <code>SystemData</code></td>
+<td>Main-loop tasks, command handlers, Modbus callbacks</td>
+<td>Main-loop tasks, commands, Modbus</td>
+<td>No ISR touches these records. Single-context access.</td>
+</tr>
+<tr>
+<td>TPS55287 record</td>
+<td>M2 <code>bsp_tps55287.c</code></td>
+<td>The TPS55287 BSP calls, on the main loop</td>
+<td>Main loop, command handlers, Modbus callbacks, <code>AppSetpoint_Update</code> through <code>BSP_TPS55287_GetStatus()</code></td>
+<td>Written only from the main loop. Single-context access.</td>
+</tr>
+<tr>
+<td>Software clock</td>
+<td>M0 <code>app_clock</code></td>
+<td>Main loop: <code>time</code>, Modbus callbacks (<code>40040</code>–<code>40041</code>), the event log, and a 1 s task that writes the 15-minute checkpoint</td>
+<td>Main loop</td>
+<td>Written only from the main loop. <code>SCH_SystemTick</code> supplies the elapsed time. Checkpoints go to internal EEPROM at 110–151 (a ring of 8).</td>
+</tr>
+<tr>
+<td>Scheduler task table</td>
+<td>M1 Scheduler</td>
+<td><code>SCH_RunSystemTickTimer</code> (ISR): <code>elapsed_ms</code>, <code>ready</code>. Main loop: <code>enabled</code>, <code>ready</code> cleared, and period changes</td>
+<td><code>SCH_HandleScheduledTask</code></td>
+<td>Main-loop writes use <code>ATOMIC_BLOCK</code>. ISR writes rely on the ISR being the only writer of <code>elapsed_ms</code> and <code>ready</code> set.</td>
+</tr>
+<tr>
+<td>Scheduler soft timers</td>
+<td>M1 Scheduler</td>
+<td>Main loop (<code>SCH_TIM_Start</code>) and ISR (decrement)</td>
+<td>Main loop (<code>SCH_TIM_isCompleted</code>)</td>
+<td>Start and read are atomic. Decrement is ISR-only.</td>
+</tr>
+<tr>
+<td>UART and console FIFOs</td>
+<td>M4 FIFO, M2 UART</td>
+<td>UART ISRs, Timer2 ISR, and main-loop writes</td>
+<td>Main loop, ISRs</td>
+<td><code>fifo.h</code> states that <code>Push</code>, <code>Pop</code>, <code>Count</code>, and <code>Clear</code> are atomic on AVR. The response spool is used only from the main loop.</td>
+</tr>
+<tr>
+<td>Console response spool and session state</td>
+<td>M0 <code>app_console</code></td>
+<td>Main loop only</td>
+<td>Main loop only</td>
+<td>No ISR access.</td>
+</tr>
+<tr>
+<td>Modbus port state</td>
+<td>FreeMODBUS</td>
+<td>USART1 and Timer1 ISRs, then <code>eMBPoll</code> in the 5 ms Modbus task</td>
+<td><code>eMBPoll</code></td>
+<td>Standard FreeMODBUS port contract.</td>
+</tr>
+</tbody>
+</table>
+<p>Everything an ISR touches is either a <code>volatile</code> scalar, an atomically-read counter, or a FIFO
+designed for one producer and one consumer. The main loop owns all application state.</p>
+<h2 id="7-known-gaps-in-the-architecture">7. Known gaps in the architecture</h2>
+<ul>
+<li><strong>Priorities.</strong> Tasks run in table order. A long task delays every later task in the same pass.
+  Nothing measures execution time. See the <a href="../scheduler_design/#9-risks-and-limits">scheduler design</a>.</li>
+<li><strong>Layer inversion: resolved.</strong> <code>bsp_tps55287.c</code> owns its record, so M2 no longer calls into M1.
+  The record is read through <code>BSP_TPS55287_GetStatus()</code>. The other records are still written by M0
+  modules, which is the expected direction.</li>
+<li><strong>Command and BSP coupling.</strong> Command handlers call BSP directly, so the command tests need the
+  BSP mocked. This is acceptable for maintenance commands but not for future user-facing commands.</li>
+<li><strong>Duplicate overview.</strong> <a href="../current_firmware/">Current firmware architecture</a> and this page cover
+  the same layers. Keep the overview short and point it here for detail.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../current_firmware/" class="btn btn-neutral float-left" title="Current firmware architecture"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../scheduler_design/" class="btn btn-neutral float-right" title="Scheduler design">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../current_firmware/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../scheduler_design/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../javascripts/mermaid.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

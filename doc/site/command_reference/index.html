@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Current command reference - DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Current command reference";
+        var mkdocs_page_input_path = "command_reference.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../current_firmware/">Current firmware architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../code_architecture/">Code architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../scheduler_design/">Scheduler design</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Current command reference</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#general-and-application-commands">General and application commands</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#i2c-maintenance-commands">I2C maintenance commands</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#24c04-eeprom-commands">24C04 EEPROM commands</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#tps55287-output-commands">TPS55287 output commands</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pac1934-rail-monitor">PAC1934 rail monitor</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#board-temperature">Board temperature</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#operating-mode">Operating mode</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#fault-latch">Fault latch</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#limits-and-events">Limits and events</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#configuration">Configuration</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#input-errors">Input errors</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#telemetry">Telemetry</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#setpoint">Setpoint</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#boot-information">Boot information</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#clock">Clock</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#status-and-reset">Status and reset</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#design-command-names">Design command names</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../hardware_overview/">Hardware overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../software_requirements/">Software requirements</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../use_cases_commands/">Use cases, user stories & commands</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../modbus_implementation/">Modbus RTU implementation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../open_issues/">Open issues</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../mode_state_machine/">Mode state machine</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/versioning/">Versioning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/unit_tests/">Unit tests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Current command reference</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="current-text-command-reference">Current text command reference</h1>
+<p>The same <strong>case-sensitive</strong> commands run on UART0 and the software UART console at
+9600 baud. Terminate a line with CR, LF, or CRLF; arguments are separated by spaces.
+Both ports echo input, begin with a <code>&gt;</code> prompt, and send the reply to the port that
+received the command. The tables show <strong>reply text only</strong>, without echo or prompt.</p>
+<h2 id="general-and-application-commands">General and application commands</h2>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>help</code></td>
+<td>Starts with <code>Available commands</code> and <code>------------------</code>, followed by all command help lines</td>
+<td>Entries are sent as the 256-byte response buffer drains.</td>
+</tr>
+<tr>
+<td><code>version</code></td>
+<td><code>DAL_PDU firmware v0.1.0 (Development) build c7f0bf8-dirty</code></td>
+<td>Firmware version and build. The build is the short git commit. <code>-dirty</code> means the tree had uncommitted changes when it was built.</td>
+</tr>
+<tr>
+<td><code>led get</code></td>
+<td><code>LED on=1000 ms off=1000 ms</code></td>
+<td>Default after reset.</td>
+</tr>
+<tr>
+<td><code>led set 250 750</code></td>
+<td><code>LED on=250 ms off=750 ms</code></td>
+<td>Both decimal durations must be nonzero, at most <code>4294967295</code> ms.</td>
+</tr>
+<tr>
+<td><code>trans get</code></td>
+<td><code>TRANS off</code></td>
+<td>Adds <code>fault</code> if either eFuse fault input is active.</td>
+</tr>
+<tr>
+<td><code>trans on</code></td>
+<td><code>TRANS on</code></td>
+<td>If a fault is latched, the reply is <code>TRANS fault</code> and PC2 stays disabled. A live-but-not-yet-latched fault does not refuse this reply by itself (decided 2026-10-15, see <a href="../mode_state_machine/#4-outputs">Mode state machine §4</a>); the 6 ms poll still catches it, latches it, and disables PC2 within one cycle regardless.</td>
+</tr>
+<tr>
+<td><code>trans off</code></td>
+<td><code>TRANS off</code></td>
+<td>Requests TPS55287 VOUT off before disabling TRANS. With an active fault, reply is <code>TRANS off fault</code>.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="i2c-maintenance-commands">I2C maintenance commands</h2>
+<p>Addresses are 7-bit (<code>0x08</code>–<code>0x77</code>); register and data bytes are <code>0x00</code>–<code>0xff</code>.
+Numbers accept decimal or a <code>0x</code> hexadecimal prefix. The examples below assume
+one responding TPS55287 at address <code>0x75</code> and its reset register values.</p>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>i2cdetect 0x74 0x75</code></td>
+<td><code>0x75</code></td>
+<td>Scan inclusive range; the trailing space precedes CRLF. With no devices, the reply is an empty line. Plain <code>i2cdetect</code> scans <code>0x08</code>–<code>0x77</code>.</td>
+</tr>
+<tr>
+<td><code>i2cget 0x75 0x04</code></td>
+<td><code>0x03</code></td>
+<td>Reads one register byte using a repeated START. Without a register, reads one byte directly.</td>
+</tr>
+<tr>
+<td><code>i2cset 0x75 0x04 0x03</code></td>
+<td><code>I2C write OK</code></td>
+<td>Writes one register byte. This example preserves the TPS55287 reset feedback setting; raw writes can change power configuration.</td>
+</tr>
+</tbody>
+</table>
+<p>An unresponsive address returns <code>I2C error</code> for <code>i2cget</code> or <code>i2cset</code>.</p>
+<h2 id="24c04-eeprom-commands">24C04 EEPROM commands</h2>
+<p>U14 has 512 bytes at logical addresses <code>0</code> through <code>511</code>. Numbers accept decimal
+or <code>0x</code> hexadecimal notation. The examples assume a connected chip and successful
+I2C transfers.</p>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>eeprom probe</code></td>
+<td><code>EEPROM present</code></td>
+<td>Reports <code>EEPROM unavailable</code> if the chip does not acknowledge.</td>
+</tr>
+<tr>
+<td><code>eeprom read 0x100 4</code></td>
+<td><code>EEPROM 0x0100: de ad be ef</code></td>
+<td>Example assumes those four bytes were stored. Omitting the length reads one byte; length must be 1–16.</td>
+</tr>
+<tr>
+<td><code>eeprom write 0x100 deadbeef</code></td>
+<td><code>EEPROM write OK</code></td>
+<td>Writes four bytes and verifies them by reading back. The hex string must have 2–32 digits (1–16 bytes); an optional <code>0x</code> prefix is accepted.</td>
+</tr>
+</tbody>
+</table>
+<p>Writes lower the PA0 write-protect pin only during the operation. The reply is
+<code>EEPROM read failed</code> or <code>EEPROM write failed</code> if the I2C transfer or verification
+fails. Out-of-range addresses, reads or writes past byte <code>511</code>, and malformed
+hex data return <code>Invalid argument</code>.</p>
+<h2 id="tps55287-output-commands">TPS55287 output commands</h2>
+<p>U5 is detected at <code>0x74</code> or <code>0x75</code> according to its MODE pin. The examples assume
+<code>0x75</code> and no active faults. <code>tps55287 set</code> and <code>tps55287 on</code> power TRANS on
+first if it is off, and confirm the chip answers, instead of requiring a
+separate <code>trans on</code> beforehand. <code>tps55287 off</code> never powers TRANS on just to
+turn itself off.</p>
+<p>This board wires an external feedback divider (R22 = 102 kΩ, R30 = 11.3 kΩ to
+GND; ratio ≈ 0.0997), not the chip's internal ratio. The TPS55287 resets to
+internal feedback (register <code>0x04</code> = <code>0x03</code>) every time its <code>EN</code>/UVLO drops —
+including every time TRANS is power-cycled, since TRANS is off whenever VOUT
+is idle. So every successful TRANS power-up (<code>trans on</code>, <code>tps55287 set</code>/<code>on</code>,
+or the equivalent Modbus write) also writes register <code>0x04</code> to <code>0x80</code>
+(external feedback) and reads it back to confirm. Every setpoint write and output-enable
+request checks that configuration again. If a raw I2C command changed it while VOUT was on,
+firmware disables VOUT before correcting feedback and re-enables it only after a successful
+setpoint write. <code>tps55287 status</code>'s <code>internal-feedback</code>/<code>external-feedback</code> text
+reflects whichever the chip is actually reporting at that moment.</p>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>tps55287 status</code></td>
+<td><code>TPS55287 addr=0x75 off external-feedback</code></td>
+<td>Appends <code>SCP</code>, <code>OCP</code>, or <code>OVP</code> for set protection flags. Reading status clears those latched flags. Does not power TRANS on; fails if TRANS is off.</td>
+</tr>
+<tr>
+<td><code>tps55287 set 5000</code></td>
+<td><code>TPS55287 set OK</code></td>
+<td>Powers TRANS on first if it is off (which also re-asserts external feedback). Sets a nominal 5000 mV request against the external ratio. The actual output has not been measured by this command.</td>
+</tr>
+<tr>
+<td><code>tps55287 get</code></td>
+<td><code>VOUT setpoint 5002 mV</code></td>
+<td>Converted back from the stored reference code using whichever feedback mode and ratio the chip currently reports; register conversion may differ slightly from the requested millivolts. Does not power TRANS on; fails if TRANS is off.</td>
+</tr>
+<tr>
+<td><code>tps55287 on</code></td>
+<td><code>TPS55287 on</code></td>
+<td>Powers TRANS on first if it is off. Refused if a PC4/PC0 fault is latched, TRANS ends up off, the chip does not respond, or external feedback cannot be re-asserted. A live-but-not-yet-latched fault does not refuse this by itself; the 6 ms poll still catches and latches it shortly after.</td>
+</tr>
+<tr>
+<td><code>tps55287 off</code></td>
+<td><code>TPS55287 off</code></td>
+<td>Clears the chip's output-enable bit. Never powers TRANS on.</td>
+</tr>
+</tbody>
+</table>
+<p><code>tps55287 set</code> and <code>tps55287 on</code> report <code>TPS55287 set failed (TRANS)</code> /
+<code>TPS55287 enable failed (TRANS)</code> if TRANS was off and powering it on failed
+(fault active, latched, the regulator did not respond, or external feedback
+could not be re-asserted — see
+<a href="../mode_state_machine/#3-regulator-monitor">Mode state machine</a>). With TRANS
+already on, <code>tps55287 set</code> rejects values below 800 mV and above ~12 V (the
+external ratio's range), reporting <code>TPS55287 set failed (I2C or range)</code> for an
+I2C failure or an out-of-range request. <code>tps55287 on</code> reports
+<code>TPS55287 enable failed (I2C or TRANS interlock)</code> if TRANS is faulted or I2C
+fails after TRANS is already on. A failed <code>get</code> or <code>status</code> reports
+<code>TPS55287 read failed (I2C)</code>.</p>
+<h2 id="pac1934-rail-monitor">PAC1934 rail monitor</h2>
+<p>The one-second background task reads U10 through the shared I2C bus. The board
+uses 10 mΩ shunts on all four channels. The example below assumes the device
+was detected at <code>0x1f</code> and all channels measure 5 V, 1 A, and 5 W.</p>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>pac1934 get</code></td>
+<td><code>PAC1934 addr=0x1f</code> followed by <code>VOUT 5000 mV 1000 mA 5000 mW</code>, <code>+12 ...</code>, <code>+5_TRANS ...</code>, and <code>+5 ...</code></td>
+<td>Shows the latest cached sample; plain <code>pac1934</code> and <code>pac1934 status</code> are aliases.</td>
+</tr>
+<tr>
+<td><code>pac1934 refresh</code></td>
+<td>Same format as <code>get</code></td>
+<td>Takes a new measurement immediately; normal polling remains every 1000 ms.</td>
+</tr>
+</tbody>
+</table>
+<p>Before the first successful poll, or after a failed I2C read, the reply is
+<code>PAC1934 unavailable</code>. Rail labels follow channel order 1–4 in the board design;
+confirm the physical wiring and installed 10 mΩ shunts during bring-up; the
+hardware review found a shunt-value mismatch in the BOM.</p>
+<h2 id="board-temperature">Board temperature</h2>
+<p>The one-second temperature task samples the TC1047A on the TEMP net (PF1/ADC1), averaging
+16 conversions. The reply is in degrees Celsius with one decimal place.</p>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>temp</code></td>
+<td><code>TEMP 25.1 C</code></td>
+<td>Shows the latest cached sample. <code>temp get</code> is an alias.</td>
+</tr>
+<tr>
+<td><code>temp refresh</code></td>
+<td><code>TEMP -0.2 C</code></td>
+<td>Takes a new sample immediately; normal sampling remains every 1000 ms.</td>
+</tr>
+</tbody>
+</table>
+<p>If the ADC fails or the reading is outside the TC1047A range of −40 °C to +125 °C, the reply is
+<code>TEMP unavailable</code>. The same value is available over Modbus as input register <code>30021</code>.</p>
+<h2 id="operating-mode">Operating mode</h2>
+<p>The mode is NORMAL, MANUAL, WARNING, or ERROR. See <a href="../mode_state_machine/">Mode state machine</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>mode</code></td>
+<td><code>MODE normal</code> and <code>CAUSES regulator=0 pac1934=0 eeprom=0 latch=0 limit=0 setpoint=0 bus=0 link=0</code></td>
+<td><code>mode get</code> is the same. A 1 in CAUSES means that cause is active. <code>link</code> is Modbus link loss (no valid request for the configured timeout, default 5 s); it only raises WARNING and does not turn TRANS/VOUT off by itself.</td>
+</tr>
+<tr>
+<td><code>mode manual</code></td>
+<td><code>MODE manual</code></td>
+<td>Takes operator control even when an ERROR cause is set. A confirmed eFuse fault remains latched and reported, but software does not turn VOUT or TRANS off in MANUAL.</td>
+</tr>
+<tr>
+<td><code>mode normal</code></td>
+<td><code>MODE normal</code></td>
+<td>Checks the regulator and limits if either has raised ERROR, clears healthy causes, then leaves MANUAL. Refused with <code>MODE refused: error</code> while a cause remains or an eFuse fault is latched.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="fault-latch">Fault latch</h2>
+<p>A fault that switches TRANS off is latched in the ATmega128A internal EEPROM, so it survives a reset.
+While any bit is latched, <code>trans on</code> is refused and VOUT cannot be enabled. The same latch is available
+over Modbus coil <code>00003</code>.</p>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>fault get</code></td>
+<td><code>FAULT latch pc4=0 pc0=0 active pc4=0 pc0=0</code></td>
+<td><code>latch</code> shows the stored bits. <code>active</code> shows the live eFuse inputs. <code>pc4</code> is the 12V TRANS fault and <code>pc0</code> is the 12V_MCU fault. Each is latched, and clears only when its input is inactive.</td>
+</tr>
+<tr>
+<td><code>fault clear</code></td>
+<td><code>FAULT latch cleared</code></td>
+<td>Clears the latch only. Refused with <code>FAULT clear refused: fault still active</code> while a fault input is active. TRANS stays off, and can be enabled again only when no fault input is active.</td>
+</tr>
+</tbody>
+</table>
+<p>A damaged EEPROM record is treated as both faults latched, so the unit stays off until the latch is cleared.</p>
+<h2 id="limits-and-events">Limits and events</h2>
+<p>Over-temperature and overcurrent are checked every second in every mode. In NORMAL, a trip turns
+VOUT and TRANS off and sets the limit ERROR. In every mode, each trip is logged once as a WARNING
+event in the 24C04. <code>mode normal</code> clears the limit ERROR once the regulator responds and limits are back in range. The ERROR is stored in internal EEPROM, so it survives a reset until that check succeeds.</p>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>limit</code></td>
+<td><code>LIMIT temp=850 vout=1000 trans=1000</code></td>
+<td><code>limit get</code> is the same. Temperature is in tenths of a degree C, so 850 is 85.0 C. Currents are in mA.</td>
+</tr>
+<tr>
+<td><code>limit temp 900</code></td>
+<td><code>LIMIT temp=900 vout=1000 trans=1000</code></td>
+<td>Range -400 to 1250. Stored in internal EEPROM and used at the next check.</td>
+</tr>
+<tr>
+<td><code>limit vout 3500</code></td>
+<td><code>LIMIT temp=900 vout=3500 trans=1000</code></td>
+<td>Range 100 to 5000 mA. <code>limit trans</code> sets the +5_TRANS limit the same way.</td>
+</tr>
+<tr>
+<td><code>limit vout 70000</code></td>
+<td><code>LIMIT refused: out of range</code></td>
+<td>Nothing changes.</td>
+</tr>
+<tr>
+<td><code>event get</code></td>
+<td><code>EVENT seq=1 sev=WARNING code=TEMP mode=NORMAL value=900 time=unset source=UNSET</code></td>
+<td>Lists the 24C04 ring, 32 slots. Codes are TEMP, VOUT_CURRENT, TRANS_CURRENT, CONFIG_CHANGED, SETPOINT_MISMATCH, and CLOCK_SET. Value is tenths of a degree C, mA, or mV, as the code says. <code>time</code> is UTC (<code>YYYY-MM-DDTHH:MM:SSZ</code>), or <code>unset</code>. <code>source</code> is where that time came from: <code>UNSET</code>, <code>RESTORED</code>, or <code>SET</code>. <code>EVENT none</code> when empty.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="configuration">Configuration</h2>
+<p>The Modbus slave address and baud rate are read at boot. Modbus <code>40105</code> and <code>40106</code> show the active values. The communications timeout takes effect at once. Each change is logged once as an INFO event (<code>CONFIG_CHANGED</code>).</p>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>config</code></td>
+<td><code>CONFIG address=1 baud=9600 timeout=5 source=DEFAULT</code></td>
+<td><code>config get</code> is the same. <code>source=DEFAULT</code> means no valid record is stored, so the compiled defaults are in use. <code>source=EEPROM</code> means the stored record is in use.</td>
+</tr>
+<tr>
+<td><code>config set address 7</code></td>
+<td><code>CONFIG address=7 baud=9600 timeout=5 source=EEPROM</code>, then <code>Address and baud take effect after reboot</code></td>
+<td>Range 1 to 247. Takes effect at the next boot.</td>
+</tr>
+<tr>
+<td><code>config set baud 19200</code></td>
+<td><code>CONFIG address=7 baud=19200 timeout=5 source=EEPROM</code>, then the reboot line</td>
+<td>Supported: 1200, 2400, 4800, 9600, 19200, 38400. Takes effect at the next boot.</td>
+</tr>
+<tr>
+<td><code>config set timeout 10</code></td>
+<td><code>CONFIG address=7 baud=19200 timeout=10 source=EEPROM</code></td>
+<td>Range 1 to 60 s, default 5. Outputs turn off after this long without a valid Modbus request. Takes effect at once.</td>
+</tr>
+<tr>
+<td><code>config set address 0</code></td>
+<td><code>CONFIG refused: out of range</code></td>
+<td>Nothing changes.</td>
+</tr>
+<tr>
+<td><code>config set baud 115200</code></td>
+<td><code>CONFIG refused: unsupported baud</code></td>
+<td>Nothing changes.</td>
+</tr>
+<tr>
+<td><code>config_reset confirm</code></td>
+<td><code>CONFIG reset to defaults</code>, the <code>CONFIG</code> line, <code>LIMIT temp=850 vout=1000 trans=1000</code></td>
+<td>Restores the configuration and the limits to the defaults and stores them. The reboot line appears only if the address or baud changed.</td>
+</tr>
+<tr>
+<td><code>config_reset</code></td>
+<td>Invalid argument reply</td>
+<td>Without <code>confirm</code> nothing changes.</td>
+</tr>
+</tbody>
+</table>
+<p><code>config_reset</code> does not clear the event log, the boot history, the fault latch, or a limit ERROR. A healthy <code>mode normal</code> request clears a limit ERROR.</p>
+<h2 id="input-errors">Input errors</h2>
+<p>The console prints <code>Unknown command</code>, <code>Too few arguments</code>, <code>Too many arguments</code>,
+or <code>Invalid argument</code> for parser/handler errors. For example, <code>led set 0 500</code>
+returns <code>Invalid argument</code>. Input lines longer than 63 characters return
+<code>Line too long</code>. A command response that fills the shared output buffer ends
+with <code>[output truncated]</code>.</p>
+<p>The larger proposed command set and power/telemetry requirements remain in
+<a href="../use_cases_commands/">Use cases, user stories &amp; commands</a>. The currently
+implemented Modbus register map is separate from these text commands.</p>
+<h2 id="telemetry">Telemetry</h2>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>telemetry</code></td>
+<td><code>SETPOINT 5000 mV</code>, then one line per rail</td>
+<td><code>SETPOINT unset</code> until a setpoint is commanded since reset. Each rail line is <code>VOUT</code>, <code>+12</code>, <code>+5_TRANS</code>, or <code>+5</code> with measured mV, mA, and mW. <code>PAC1934 unavailable</code> when the monitor cannot be read.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="setpoint">Setpoint</h2>
+<p><code>setpoint get</code> reports the commanded VOUT setpoint held in system data. It is the value last set by the
+console or by Modbus <code>40001</code>, and it does not read the chip. <code>tps55287 get</code> still reads the TPS55287 register.</p>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>setpoint get</code></td>
+<td><code>SETPOINT 5000 mV</code></td>
+<td><code>SETPOINT unset</code> until a setpoint is commanded since reset.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="boot-information">Boot information</h2>
+<p>Each boot adds one to the boot count, which is kept in internal EEPROM. The cause comes from the reset
+flags read at startup. A watchdog fault is recorded before the TPL5010 resets the unit, and it is written to
+the boot record at the next boot.</p>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>bootinfo</code></td>
+<td><code>BOOT count=2 cause=CLIENT_WATCHDOG source=MODBUS</code></td>
+<td><code>bootinfo get</code> is the same. Causes are POWER_ON, BROWN_OUT, EXTERNAL, AVR_WATCHDOG, CLIENT_WATCHDOG, COMMAND (from <code>reset confirm</code>), and UNKNOWN. Sources are CONSOLE, HEARTBEAT, MODBUS, POWER_MONITOR, TEMPERATURE, and MONITOR. <code>source=-</code> unless the cause is CLIENT_WATCHDOG.</td>
+</tr>
+</tbody>
+</table>
+<p><code>bootinfo history</code> lists the last 10 boots, newest first, from internal EEPROM.</p>
+<p>The same boot count, cause, and source are on Modbus input registers <code>30032</code>–<code>30034</code>.</p>
+<h2 id="clock">Clock</h2>
+<p>A software clock keeps UTC from the last set and the scheduler tick. It has no battery. Every 15 minutes, and on each set, it stores a checkpoint in internal EEPROM. After a reset it restores the last checkpoint with source <code>RESTORED</code>, which is approximate, since the power-off time is unknown. A set from the console or Modbus gives source <code>SET</code>. Without a checkpoint the clock is <code>UNSET</code>. Events carry the clock time and its source.</p>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>time</code></td>
+<td><code>TIME 2026-10-06T12:34:56Z source=SET</code> or <code>TIME unset source=UNSET</code></td>
+<td><code>time get</code> is the same. UTC. The source is <code>UNSET</code>, <code>RESTORED</code>, or <code>SET</code>.</td>
+</tr>
+<tr>
+<td><code>time set 1791290096</code></td>
+<td><code>TIME 2026-10-06T12:34:56Z source=SET</code></td>
+<td>Sets the clock from Unix seconds. Logged as a <code>CLOCK_SET</code> event.</td>
+</tr>
+<tr>
+<td><code>time set 4294967295</code></td>
+<td><code>TIME refused: reserved value</code></td>
+<td>The value means unset. Nothing changes.</td>
+</tr>
+<tr>
+<td><code>time set 17x</code></td>
+<td>Invalid argument reply</td>
+<td>Nothing changes.</td>
+</tr>
+</tbody>
+</table>
+<p>The clock uses the MCU clock. It has no temperature compensation, so it drifts with the crystal. The OBC should set it periodically. Modbus reads and sets the same clock: <code>40040</code>–<code>40041</code> to set and read, and <code>30039</code>–<code>30040</code> to read.</p>
+<h2 id="status-and-reset">Status and reset</h2>
+<table>
+<thead>
+<tr>
+<th>Command example</th>
+<th>Expected reply</th>
+<th>Notes</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>status</code></td>
+<td><code>STATUS</code>, then the replies of <code>mode</code>, <code>temp</code>, <code>telemetry</code>, <code>fault get</code>, and <code>bootinfo</code>, one after another</td>
+<td>Read-only summary for the technician. Each section has the same format as its own command.</td>
+</tr>
+<tr>
+<td><code>reset confirm</code></td>
+<td><code>RESET outputs off, restarting</code></td>
+<td>Turns VOUT and TRANS off, sends the reply, then restarts the MCU through the watchdog after about 0.1 s. The next boot reports <code>cause=COMMAND</code>. Without <code>confirm</code> nothing happens.</td>
+</tr>
+<tr>
+<td><code>reset</code></td>
+<td>Invalid argument reply</td>
+<td>Needs <code>confirm</code>.</td>
+</tr>
+<tr>
+<td><code>persist_reset internal confirm</code></td>
+<td><code>PERSIST_RESET internal EEPROM erased, restarting</code></td>
+<td>Turns VOUT and TRANS off, blanks every byte of internal EEPROM (fault latch, limit error, limit values, boot record and history, config, clock checkpoint), then restarts the same way <code>reset confirm</code> does, since all of that is cached in RAM at boot and needs a fresh init to pick up the now-blank EEPROM. Blanking takes under a second on a lightly-used chip (it skips bytes that already read 0xFF), well inside the TPL5010's 10 s window.</td>
+</tr>
+<tr>
+<td><code>persist_reset external confirm</code></td>
+<td><code>PERSIST_RESET external EEPROM erased</code></td>
+<td>Blanks the whole U14 24C04 (the event log ring). Nothing is cached from it at boot, so this does not restart the MCU or touch the outputs. A failed erase (chip not acknowledging) replies <code>PERSIST_RESET external EEPROM failed</code>.</td>
+</tr>
+<tr>
+<td><code>persist_reset internal</code>, <code>persist_reset external</code>, <code>persist_reset</code></td>
+<td>Invalid or too-few-arguments reply</td>
+<td>Each needs its scope (<code>internal</code> or <code>external</code>) and <code>confirm</code>.</td>
+</tr>
+</tbody>
+</table>
+<p><code>persist_reset</code> is the only command that returns EEPROM to the state of a never-written chip; <code>fault clear</code>, <code>mode normal</code>, and <code>config_reset confirm</code> each clear a narrower, specific piece of internal EEPROM state (see <a href="../mode_state_machine/#8-known-limits">Mode state machine §8</a> and the <a href="#configuration">configuration section</a> above).</p>
+<h2 id="design-command-names">Design command names</h2>
+<p>The firmware names are the reference. The design names below are dropped (OI-13).</p>
+<table>
+<thead>
+<tr>
+<th>Design name</th>
+<th>Use instead</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>STAT</code></td>
+<td><code>status</code></td>
+</tr>
+<tr>
+<td><code>FAULT?</code></td>
+<td><code>fault get</code></td>
+</tr>
+<tr>
+<td><code>FAULT CLR</code></td>
+<td><code>fault clear</code></td>
+</tr>
+<tr>
+<td><code>LOG?</code></td>
+<td><code>event get</code></td>
+</tr>
+<tr>
+<td><code>TEMP?</code></td>
+<td><code>temp get</code></td>
+</tr>
+<tr>
+<td><code>ILIM</code></td>
+<td><code>limit</code>, <code>limit vout</code>, <code>limit trans</code></td>
+</tr>
+<tr>
+<td><code>RESET</code></td>
+<td><code>reset confirm</code></td>
+</tr>
+</tbody>
+</table>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../scheduler_design/" class="btn btn-neutral float-left" title="Scheduler design"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../hardware_overview/" class="btn btn-neutral float-right" title="Hardware overview">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../scheduler_design/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../hardware_overview/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../javascripts/mermaid.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

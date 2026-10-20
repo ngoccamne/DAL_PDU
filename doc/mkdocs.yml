@@ -1,0 +1,27 @@
+site_name: DAL_PDU Software Design
+site_description: Firmware/software requirements, hardware interface summary, and command reference for the DAL_PDU variable power supply
+docs_dir: docs
+theme:
+  name: readthedocs
+extra_javascript:
+  - https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js
+  - javascripts/mermaid.js
+nav:
+  - Overview: index.md
+  - Current firmware architecture: current_firmware.md
+  - Code architecture: code_architecture.md
+  - Scheduler design: scheduler_design.md
+  - Current command reference: command_reference.md
+  - Firmware build and packaging: firmware_build.md
+  - OTA bootloader handoff: ota_bootloader.md
+  - Boot memory layout: boot_memory_layout.md
+  - Hardware overview: hardware_overview.md
+  - Software requirements: software_requirements.md
+  - Use cases, user stories & commands: use_cases_commands.md
+  - Modbus RTU implementation: modbus_implementation.md
+  - Python PDU Modbus tool: pdu_modbus_tool.md
+  - Open issues: open_issues.md
+  - Mode state machine: mode_state_machine.md
+  - Code Implementation:
+    - Versioning: code_implementation/versioning.md
+    - Unit tests: code_implementation/unit_tests.md

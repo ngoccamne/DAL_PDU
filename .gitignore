@@ -1,0 +1,53 @@
+# Atmel Studio and Visual Studio workspace state
+.vs/
+.vscode/
+/.venv/
+*.atsuo
+*.suo
+*.user
+*.userprefs
+*.sln.docstates
+*.VC.db
+*.VC.opendb
+ipch/
+
+# Generated firmware build directories and files
+Debug/
+Release/
+bin/
+obj/
+/out/
+*.o
+*.d
+*.elf
+*.hex
+*.eep
+*.lss
+*.map
+*.srec
+*.lst
+*.sym
+makedep.mk
+
+# Keep the active firmware images from Atmel Studio builds.
+!firmware/DAL_PDU/DAL_PDU/Debug/
+firmware/DAL_PDU/DAL_PDU/Debug/*
+!firmware/DAL_PDU/DAL_PDU/Debug/*.hex
+!firmware/DAL_PDU/DAL_PDU/Debug/*.elf
+!firmware/DAL_PDU/DAL_PDU/Release/
+firmware/DAL_PDU/DAL_PDU/Release/*
+!firmware/DAL_PDU/DAL_PDU/Release/*.hex
+!firmware/DAL_PDU/DAL_PDU/Release/*.elf
+
+# Host test executables
+/tests/test_*.exe
+
+
+# Keep packaged firmware and build artifacts in the root release folder.
+# These exceptions override the global *.hex, *.elf, and *.map rules above.
+!/release/
+!/release/**
+
+# Reference copies kept on disk, not part of this repo
+ref/SpaceLiinTech_DAL_PDU_FW_1.0.0/
+ref/SpaceLiin_PDU_Firmware/

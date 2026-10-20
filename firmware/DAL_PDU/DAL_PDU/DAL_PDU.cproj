@@ -1,0 +1,626 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003" ToolsVersion="14.0">
+  <PropertyGroup>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectVersion>7.0</ProjectVersion>
+    <ToolchainName>com.Atmel.AVRGCC8.C</ToolchainName>
+    <ProjectGuid>dce6c7e3-ee26-4d79-826b-08594b9ad897</ProjectGuid>
+    <avrdevice>ATmega128A</avrdevice>
+    <avrdeviceseries>none</avrdeviceseries>
+    <OutputType>Executable</OutputType>
+    <Language>C</Language>
+    <OutputFileName>$(MSBuildProjectName)</OutputFileName>
+    <OutputFileExtension>.elf</OutputFileExtension>
+    <OutputDirectory>$(MSBuildProjectDirectory)\$(Configuration)</OutputDirectory>
+    <AssemblyName>DAL_PDU</AssemblyName>
+    <Name>DAL_PDU</Name>
+    <RootNamespace>DAL_PDU</RootNamespace>
+    <ToolchainFlavour>Native</ToolchainFlavour>
+    <KeepTimersRunning>true</KeepTimersRunning>
+    <OverrideVtor>false</OverrideVtor>
+    <CacheFlash>true</CacheFlash>
+    <ProgFlashFromRam>true</ProgFlashFromRam>
+    <RamSnippetAddress>0x20000000</RamSnippetAddress>
+    <UncachedRange />
+    <preserveEEPROM>true</preserveEEPROM>
+    <OverrideVtorValue>exception_table</OverrideVtorValue>
+    <BootSegment>2</BootSegment>
+    <ResetRule>0</ResetRule>
+    <eraseonlaunchrule>0</eraseonlaunchrule>
+    <EraseKey />
+    <AsfFrameworkConfig>
+      <framework-data xmlns="">
+        <options />
+        <configurations />
+        <files />
+        <documentation help="" />
+        <offline-documentation help="" />
+        <dependencies>
+          <content-extension eid="atmel.asf" uuidref="Atmel.ASF" version="3.52.0" />
+        </dependencies>
+      </framework-data>
+    </AsfFrameworkConfig>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <ToolchainSettings>
+      <AvrGcc>
+  <avrgcc.common.Device>-mmcu=atmega128a -B "%24(PackRepoDir)\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega128a"</avrgcc.common.Device>
+  <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
+  <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+  <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+  <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+  <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+  <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+  <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+  <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+  <avrgcc.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>NDEBUG</Value>
+      <Value>MB_ASCII_ENABLED=0</Value>
+      <Value>MB_FUNC_OTHER_REP_SLAVEID_ENABLED=0</Value>
+    </ListValues>
+  </avrgcc.compiler.symbols.DefSymbols>
+  <avrgcc.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.7.374\include\</Value>
+      <Value>src\dev\M2_BSP\Modbus</Value>
+      <Value>src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\include</Value>
+      <Value>src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\rtu</Value>
+      <Value>../src/dev/M2_BSP/Modbus</Value>
+      <Value>../src/dev/M4_MiddleWare/ThirdParty/freemodbus/modbus/rtu</Value>
+      <Value>../src/dev/M4_MiddleWare/ThirdParty/freemodbus/modbus/include</Value>
+    </ListValues>
+  </avrgcc.compiler.directories.IncludePaths>
+  <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+  <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+  <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+  <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+  <avrgcc.linker.libraries.Libraries>
+    <ListValues>
+      <Value>libm</Value>
+    </ListValues>
+  </avrgcc.linker.libraries.Libraries>
+  <avrgcc.linker.miscellaneous.LinkerFlags>-Wl,--defsym=__TEXT_REGION_LENGTH__=0x1DF00</avrgcc.linker.miscellaneous.LinkerFlags>
+  <avrgcc.assembler.general.IncludePaths>
+    <ListValues>
+      <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.7.374\include\</Value>
+    </ListValues>
+  </avrgcc.assembler.general.IncludePaths>
+</AvrGcc>
+    </ToolchainSettings>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <ToolchainSettings>
+      <AvrGcc>
+        <avrgcc.common.Device>-mmcu=atmega128a -B "%24(PackRepoDir)\atmel\ATmega_DFP\1.7.374\gcc\dev\atmega128a"</avrgcc.common.Device>
+        <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
+        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+        <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+        <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+        <avrgcc.compiler.symbols.DefSymbols>
+          <ListValues>
+            <Value>DEBUG</Value>
+            <Value>MB_ASCII_ENABLED=0</Value>
+            <Value>MB_FUNC_OTHER_REP_SLAVEID_ENABLED=0</Value>
+          </ListValues>
+        </avrgcc.compiler.symbols.DefSymbols>
+        <avrgcc.compiler.directories.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.7.374\include\</Value>
+            <Value>src\dev\M2_BSP\Modbus</Value>
+            <Value>src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\include</Value>
+            <Value>src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\rtu</Value>
+            <Value>../src/dev/M2_BSP/Modbus</Value>
+            <Value>../src/dev/M4_MiddleWare/ThirdParty/freemodbus/modbus/include</Value>
+            <Value>../src/dev/M4_MiddleWare/ThirdParty/freemodbus/modbus/rtu</Value>
+          </ListValues>
+        </avrgcc.compiler.directories.IncludePaths>
+        <avrgcc.compiler.optimization.level>Optimize debugging experience (-Og)</avrgcc.compiler.optimization.level>
+        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+        <avrgcc.compiler.optimization.DebugLevel>Default (-g2)</avrgcc.compiler.optimization.DebugLevel>
+        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+        <avrgcc.linker.libraries.Libraries>
+          <ListValues>
+            <Value>libm</Value>
+          </ListValues>
+        </avrgcc.linker.libraries.Libraries>
+        <avrgcc.linker.miscellaneous.LinkerFlags>-Wl,--defsym=__TEXT_REGION_LENGTH__=0x1DF00</avrgcc.linker.miscellaneous.LinkerFlags>
+        <avrgcc.assembler.general.IncludePaths>
+          <ListValues>
+            <Value>%24(PackRepoDir)\atmel\ATmega_DFP\1.7.374\include\</Value>
+          </ListValues>
+        </avrgcc.assembler.general.IncludePaths>
+        <avrgcc.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcc.assembler.debugging.DebugLevel>
+      </AvrGcc>
+    </ToolchainSettings>
+  </PropertyGroup>
+  <ItemGroup>
+    <Compile Include="main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_main.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_main.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_console.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_xtp.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_xtp.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_console.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_heartbeat.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_heartbeat.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_watchdog.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_watchdog.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_temperature.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_temperature.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_limits.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_limits.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_config.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_config.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_config.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_status.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_status.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_reset.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_reset.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_persist.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_persist.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_setpoint.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_setpoint.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_clock.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_clock.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\Version\version.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_time.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_time.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_event.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_event.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_limit.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_limit.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_event.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_event.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_telemetry.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_telemetry.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_setpoint.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_setpoint.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_boot.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_watchdog_note.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\Reset\bsp_reset.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_bootinfo.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_mode.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_mode.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_power.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_power.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_retry.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_retry.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_modbus.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_modbus.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_power_monitor.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M0_App\app_power_monitor.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\cmdline.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\cmdline.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\Scheduler\scheduler.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\Scheduler\scheduler.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\Scheduler\scheduler_define.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\SystemData\system_data.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\SystemData\system_data.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_led.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_led.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_trans.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_trans.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_i2c.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_i2c.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_tps55287.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_tps55287.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_mode.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_mode.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_fault.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_fault.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_temp.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_temp.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_pac1934.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_pac1934.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_eeprom.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M1_Sys\CommandLine\command_eeprom.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M4_MiddleWare\FIFO\fifo.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M4_MiddleWare\FIFO\fifo.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\UART0\uart0.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\UART0\uart0.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\SoftUART\soft_uart.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\SoftUART\soft_uart.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\ConsoleUART\console_uart.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\ConsoleUART\console_uart.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\DIO\avr\do.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\DIO\do.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\UART\uart.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\UART\uart.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\UART\bsp_uart.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\UART\bsp_uart.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\Timer\bsp_timer.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\Timer\bsp_timer.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\Watchdog\bsp_watchdog.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\Watchdog\bsp_watchdog.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\LED\bsp_led.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\LED\bsp_led.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\Power\bsp_power.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\Power\bsp_power.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\I2C\bsp_i2c.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\I2C\bsp_i2c.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\EEPROM\bsp_eeprom.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\EEPROM\bsp_eeprom.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\TPS55287\bsp_tps55287.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\TPS55287\bsp_tps55287.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\NVM\bsp_nvm.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\NVM\bsp_nvm.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\NTC\bsp_ntc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\NTC\bsp_ntc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\PAC1934\bsp_pac1934.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\PAC1934\bsp_pac1934.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Devices\TPS55287\tps55287.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Devices\TPS55287\tps55287.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\ADC\adc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\ADC\adc.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Devices\PAC1934\pac1934.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Devices\PAC1934\pac1934.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Devices\EEPROM24C04\eeprom24c04.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Devices\EEPROM24C04\eeprom24c04.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\I2C\avr_i2c.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\I2C\avr_i2c.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\UART1\uart1.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M3_Driver\Component\UART1\uart1.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\Modbus\bsp_modbus.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\Modbus\bsp_modbus.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\Modbus\port.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\Modbus\portevent.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\mb.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\Modbus\mbrtu_avr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\rtu\mbcrc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\functions\mbfuncholding.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\functions\mbfuncinput.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\functions\mbfunccoils.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\functions\mbfuncdisc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\functions\mbutils.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M2_BSP\dal_pdu_board.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M4_MiddleWare\ThirdParty\printf\printf.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\dev\M4_MiddleWare\ThirdParty\printf\printf.h">
+      <SubType>compile</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src" />
+    <Folder Include="src\dev" />
+    <Folder Include="src\dev\M0_App" />
+    <Folder Include="src\dev\M1_Sys" />
+    <Folder Include="src\dev\M1_Sys\CommandLine" />
+    <Folder Include="src\dev\M1_Sys\Scheduler" />
+    <Folder Include="src\dev\M1_Sys\SystemData" />
+    <Folder Include="src\dev\M1_Sys\Version\" />
+    <Folder Include="src\dev\M2_BSP" />
+    <Folder Include="src\dev\M2_BSP\Reset\" />
+    <Folder Include="src\dev\M2_BSP\UART" />
+    <Folder Include="src\dev\M2_BSP\Timer" />
+    <Folder Include="src\dev\M2_BSP\Watchdog" />
+    <Folder Include="src\dev\M2_BSP\LED" />
+    <Folder Include="src\dev\M2_BSP\Power" />
+    <Folder Include="src\dev\M2_BSP\I2C" />
+    <Folder Include="src\dev\M2_BSP\EEPROM" />
+    <Folder Include="src\dev\M2_BSP\TPS55287" />
+    <Folder Include="src\dev\M2_BSP\NVM" />
+    <Folder Include="src\dev\M2_BSP\NTC" />
+    <Folder Include="src\dev\M2_BSP\PAC1934" />
+    <Folder Include="src\dev\M2_BSP\Modbus" />
+    <Folder Include="src\dev\M3_Driver" />
+    <Folder Include="src\dev\M3_Driver\Component\UART" />
+    <Folder Include="src\dev\M3_Driver\Component" />
+    <Folder Include="src\dev\M3_Driver\Component\UART0" />
+    <Folder Include="src\dev\M3_Driver\Component\SoftUART" />
+    <Folder Include="src\dev\M3_Driver\Component\ConsoleUART" />
+    <Folder Include="src\dev\M3_Driver\Component\I2C" />
+    <Folder Include="src\dev\M3_Driver\Devices\" />
+    <Folder Include="src\dev\M3_Driver\Devices\TPS55287" />
+    <Folder Include="src\dev\M3_Driver\Component\ADC" />
+    <Folder Include="src\dev\M3_Driver\Devices\PAC1934" />
+    <Folder Include="src\dev\M3_Driver\Devices\EEPROM24C04" />
+    <Folder Include="src\dev\M3_Driver\Component\UART1" />
+    <Folder Include="src\dev\M3_Driver\Component\DIO" />
+    <Folder Include="src\dev\M3_Driver\Component\DIO\avr" />
+    <Folder Include="src\dev\M4_MiddleWare" />
+    <Folder Include="src\dev\M4_MiddleWare\FIFO" />
+    <Folder Include="src\dev\M4_MiddleWare\ThirdParty\" />
+    <Folder Include="src\dev\M4_MiddleWare\ThirdParty\printf\" />
+    <Folder Include="src\dev\M4_MiddleWare\ThirdParty\freemodbus" />
+    <Folder Include="src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus" />
+    <Folder Include="src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\include" />
+    <Folder Include="src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\rtu" />
+    <Folder Include="src\dev\M4_MiddleWare\ThirdParty\freemodbus\modbus\functions" />
+    <Folder Include="src\dev\M5_Utils" />
+  </ItemGroup>
+  <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
+</Project>

@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\xcli_client.dir/objects.a
+C:\msys64\mingw64\bin\ar.exe qc CMakeFiles\xcli_client.dir/objects.a @CMakeFiles\xcli_client.dir\objects1.rsp
+C:\msys64\mingw64\bin\gcc.exe -O3 -DNDEBUG -static -Wl,--whole-archive CMakeFiles\xcli_client.dir/objects.a -Wl,--no-whole-archive -o xcli_client.exe -Wl,--out-implib,libxcli_client.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\xcli_client.dir\linkLibs.rsp

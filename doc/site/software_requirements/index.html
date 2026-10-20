@@ -1,0 +1,1037 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Software requirements - DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Software requirements";
+        var mkdocs_page_input_path = "software_requirements.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../current_firmware/">Current firmware architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../code_architecture/">Code architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../scheduler_design/">Scheduler design</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../command_reference/">Current command reference</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../hardware_overview/">Hardware overview</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Software requirements</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#1-scope">1. Scope</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#2-assumptions-and-hardware-dependencies">2. Assumptions and hardware dependencies</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#3-system-modes">3. System modes</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#4-functional-requirements">4. Functional requirements</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#41-serial-resource-allocation">4.1 Serial resource allocation</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#42-power-control-variable-output">4.2 Power control (variable output)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#43-protection">4.3 Protection</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#44-monitoring-telemetry">4.4 Monitoring / telemetry</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#45-communications-general">4.5 Communications (general)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#46-bootloader-and-firmware-update">4.6 Bootloader and firmware update</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#47-watchdog">4.7 Watchdog</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#48-configuration-and-non-volatile-storage">4.8 Configuration and non-volatile storage</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#5-non-functional-requirements">5. Non-functional requirements</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#6-bootloader-design-detail">6. Bootloader design detail</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#61-flash-layout-atmega128a-128-kib-total">6.1 Flash layout (ATmega128A, 128 KiB total)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#62-bank-header">6.2 Bank header</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#63-boot-fallback-state-machine">6.3 Boot / fallback state machine</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#64-field-update-protocol-pc104-uart">6.4 Field update protocol (PC104 UART)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#7-implementation-status">7. Implementation status</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#8-status-of-design-pages">8. Status of design pages</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../use_cases_commands/">Use cases, user stories & commands</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../modbus_implementation/">Modbus RTU implementation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../open_issues/">Open issues</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../mode_state_machine/">Mode state machine</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/versioning/">Versioning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/unit_tests/">Unit tests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Software requirements</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="software-requirements-document">Software requirements document</h1>
+<h2 id="1-scope">1. Scope</h2>
+<p>This document defines the requirements for the DAL_PDU firmware (ATmega128A, <code>U6</code>). The firmware turns
+the board into an OBC-commanded variable power supply: it regulates and reports the <code>VOUT</code> rail, switches
+the transducer branch, reports telemetry, accepts commands over Modbus (RS-485), a PC104 UART, and a
+local console UART, and hosts a dual-bank, CRC-checked bootloader that the OBC can use to reflash the
+board over the PC104 UART. Hardware facts referenced here come from
+<a href="../hardware_overview/">Hardware overview</a>; see that page for the underlying schematic evidence.</p>
+<p>Requirement IDs use the prefix <code>SRS-&lt;AREA&gt;-&lt;NNN&gt;</code>. <code>AREA</code> is one of <code>GEN</code> (general), <code>PWR</code> (power
+control), <code>PROT</code> (protection), <code>MON</code> (monitoring), <code>COM</code> (communications), <code>BOOT</code> (bootloader), <code>WDT</code>
+(watchdog), <code>CFG</code> (configuration/NVM).</p>
+<h2 id="2-assumptions-and-hardware-dependencies">2. Assumptions and hardware dependencies</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Assumption</th>
+<th>Consequence if false</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>A-1</code></td>
+<td><code>IF-001</code> (RS-232 driver/receiver direction at U12) is corrected before firmware bring-up. The console uses the software UART on PE3/PE4 (<code>MCU-001</code>, decided).</td>
+<td>Section 4.1's allocation of USART0 to the PC104 UART is valid once <code>IF-001</code> is fixed. The PC104 UART and bootloader cannot function until then.</td>
+</tr>
+<tr>
+<td><code>A-2</code></td>
+<td>The crystal is 12 MHz and the I2C pull-ups are 4.7 kΩ, as fitted (<code>BOM-002</code>, <code>I2C-001</code>, decided 2026-10-06). The BOM and schematic are brought into line with this (<code>BOM-001</code>, <code>BOM-003</code>).</td>
+<td>Baud-rate, I2C, ADC, and timer calculations use <code>F_CPU</code> = 12 MHz in <code>dal_pdu_board.h</code>. The Timer0 tick is 1.0027 ms (0.27 % slow). Baud errors are 0.16 % or less.</td>
+</tr>
+<tr>
+<td><code>A-3</code></td>
+<td><code>IF-002</code> (RS-485 idle bias about 30 mV) is accepted as-is (decided 2026-10-06).</td>
+<td>Modbus framing must tolerate line noise during idle and undriven bus periods (<code>SRS-COM-030</code>).</td>
+</tr>
+<tr>
+<td><code>A-4</code></td>
+<td>The TPS55287 output range, feedback scaling, and I2C register map are confirmed against the built board. Feedback topology is confirmed external (R22 = 102 kΩ, R30 = 11.3 kΩ to GND; ratio ≈ 0.0997), not yet independently bench-measured/calibrated per the hardware review's power page.</td>
+<td><code>VOUT</code> setpoint units and range in this document (Section 4.2) are provisional until calibrated</td>
+</tr>
+<tr>
+<td><code>A-5</code></td>
+<td>No hardware power-good signal is used for the fixed 5 V rails. The PG outputs are unused by decision (<code>PWR-004</code>).</td>
+<td>Rail-health inference relies entirely on PAC1934 readings, not a GPIO power-good interrupt</td>
+</tr>
+</tbody>
+</table>
+<h2 id="3-system-modes">3. System modes</h2>
+<p>The operating mode is one of four: <strong>NORMAL</strong>, <strong>MANUAL</strong>, <strong>WARNING</strong>, and <strong>ERROR</strong>. The mode is derived from
+the self-test, the fault latch, the manual request, and the PAC1934 status. The implementation is described in
+<a href="../mode_state_machine/">Mode state machine</a>.</p>
+<pre><code class="language-mermaid">stateDiagram-v2
+  [*] --&gt; NORMAL: startup, no error
+  [*] --&gt; WARNING: PAC1934 U10 not detected
+  NORMAL --&gt; WARNING: PAC1934 unreadable or link lost
+  NORMAL --&gt; ERROR: over-temperature or overcurrent limit
+  WARNING --&gt; NORMAL: cause clears
+  NORMAL --&gt; ERROR: regulator not detected when TRANS is enabled, fault, or no response
+  WARNING --&gt; ERROR: regulator not detected when TRANS is enabled, fault, or no response
+  NORMAL --&gt; MANUAL: manual request
+  WARNING --&gt; MANUAL: manual request
+  ERROR --&gt; MANUAL: manual request
+  MANUAL --&gt; NORMAL: normal request, regulator responds and no limit is exceeded
+  ERROR --&gt; NORMAL: normal request, healthy regulator and limits
+  ERROR --&gt; WARNING: normal request, healthy regulator and limits; warning cause present
+</code></pre>
+<p>The regulator (U5) is behind the TRANS eFuse, which is off at idle by design, so it is checked on demand the
+first time TRANS is enabled, not at startup (OI-31) — the <code>[*] --&gt; ERROR</code> transition that used to exist here
+for a missing regulator at startup is gone for that reason.</p>
+<ul>
+<li><strong>NORMAL</strong>: outputs allowed, as commanded. The regulator is monitored every second. A regulator fault, or an over-temperature or overcurrent limit trip, moves the unit to ERROR.</li>
+<li><strong>MANUAL</strong>: entered by command from NORMAL, WARNING, or ERROR. A confirmed eFuse fault is latched and reported without a software shutdown of VOUT or TRANS. Regulator and limit causes also leave outputs under operator control. A normal request checks regulator and limits before leaving MANUAL; an eFuse latch must first be cleared with <code>fault clear</code>.</li>
+<li><strong>WARNING</strong>: entered when the PAC1934 is unreadable or Modbus link loss is active. Link loss by itself does not turn outputs off.</li>
+<li><strong>ERROR</strong>: entered for a regulator fault, a limit trip in NORMAL, or a confirmed eFuse fault outside MANUAL. Outputs are forced off. A normal request clears regulator/limit causes only after a successful health check; an eFuse latch requires <code>fault clear</code>.</li>
+<li><strong>Self-test</strong> (startup only): U10 missing gives WARNING, and U14 (24C04) missing is recorded but does not change the mode. U5 is not part of the startup self-test (OI-31) — it is checked on demand the first time TRANS is enabled.</li>
+<li><strong>Bootloader</strong>: not yet implemented (see <a href="../open_issues/">Open issues OI-16</a>). When implemented, <code>VOUT</code> and the transducer branch are forced off before entry (<code>SRS-BOOT-076</code>).</li>
+</ul>
+<h2 id="4-functional-requirements">4. Functional requirements</h2>
+<h3 id="41-serial-resource-allocation">4.1 Serial resource allocation</h3>
+<p>The MCU has two hardware USARTs and three required serial roles (Section 3 of
+<a href="../hardware_overview/#mcu-serial-resource-map-as-wired-today">Hardware overview</a>). This design allocates
+them by criticality: the OBC-facing Modbus link is the primary real-time control channel and gets a
+hardware UART even though it is not the one silk-screened for it; the human-operated console tolerates a
+software UART's jitter.</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SRS-COM-001</code></td>
+<td>The PC104 UART (commands + bootloader, <code>H1-19/20</code> via U12) <strong>shall</strong> use <code>USART0</code> (<code>PE0</code>/<code>PE1</code>), once <code>IF-001</code> is corrected. No pin change required.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-002</code></td>
+<td>The Modbus/RS-485 link <strong>shall</strong> use <code>USART1</code>: MCU RX on <code>PD2</code>, MCU TX on <code>PD3</code>, and the RS-485 direction on <code>PD5</code>, as wired on the board (ECO confirmed 2026-10-06).</td>
+</tr>
+<tr>
+<td><code>SRS-COM-003</code></td>
+<td>Superseded by <code>SRS-COM-002</code>. The ECO is on the board, so the bit-banged Modbus fallback is not used.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-004</code></td>
+<td>The local console (<code>P2</code>, <code>MCU_CONSOLE_TX/RX</code> on <code>PE3</code>/<code>PE4</code>) <strong>shall</strong> be implemented as a timer-driven, bit-banged UART on those existing pins, since they are not a hardware USART pair (<code>MCU-001</code>) and the console is human-typed, low-duty, and non-real-time.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-030</code></td>
+<td>With the RS-485 idle bias at about 30 mV (<code>A-3</code>), the firmware <strong>shall</strong> accept a request only when its frame is complete (T3.5 silence), its address matches, and its CRC is valid. Bytes that do not form a valid frame <strong>shall</strong> be discarded without a reply.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-005</code></td>
+<td>The debug UART (<code>P1</code>, sharing <code>USART0</code> logic) <strong>shall</strong> be bench/ground-only and <strong>shall not</strong> be active at the same time as the PC104 UART in a flight/operational configuration.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="42-power-control-variable-output">4.2 Power control (variable output)</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SRS-PWR-010</code></td>
+<td>Firmware <strong>shall</strong> command the <code>VOUT</code> setpoint by writing the U5 TPS55287 output-voltage register over the shared I2C/TWI bus (<code>PD0</code>/<code>PD1</code>).</td>
+</tr>
+<tr>
+<td><code>SRS-PWR-011</code></td>
+<td>Firmware <strong>shall</strong> default <code>VOUT</code> and the transducer branch (<code>U1</code>) to disabled at power-up, until commanded otherwise.</td>
+</tr>
+<tr>
+<td><code>SRS-PWR-012</code></td>
+<td>Firmware <strong>shall</strong> enable the transducer branch (<code>U1</code> via <code>MCU_EFUSE_EN</code>/Q1) before enabling <code>VOUT</code>, and <strong>shall</strong> disable <code>VOUT</code> before disabling the transducer branch, on every transition.</td>
+</tr>
+<tr>
+<td><code>SRS-PWR-013</code></td>
+<td>Firmware <strong>shall</strong> use the board's external feedback configuration (<code>0x04 = 0x80</code>) before calculating a setpoint or enabling VOUT, verify that configuration over I2C, and reject setpoints outside 800–12000 mV rather than clamping silently. If VOUT is already enabled in the wrong feedback mode, it <strong>shall</strong> be disabled before correction. The range remains subject to bench calibration (Assumption <code>A-4</code>).</td>
+</tr>
+<tr>
+<td><code>SRS-PWR-014</code></td>
+<td>Firmware <strong>shall</strong> confirm the applied <code>VOUT</code> setpoint by reading back the PAC1934 <code>VOUT</code> channel within a bounded settling time and flag a setpoint-mismatch condition if the measured value does not converge.</td>
+</tr>
+<tr>
+<td><code>SRS-PWR-015</code></td>
+<td><strong>Revised 2026-10-15</strong> (added the MANUAL exception to the ERROR clause). Firmware <strong>shall not</strong> enable <code>VOUT</code> or the transducer branch in ERROR — unless a manual request has since been made, in which case MANUAL <strong>shall</strong> take priority and enabling <strong>shall</strong> be allowed — while a fault is latched, or while the bootloader is active (Section 3). The latched-fault and bootloader clauses are not affected by a manual request.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="43-protection">4.3 Protection</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SRS-PROT-020</code></td>
+<td><strong>Revised 2026-10-16</strong> (debounce added; WARNING changed to ERROR). Firmware <strong>shall</strong> monitor <code>EFUSE1_MCU_FLT</code> and <code>EFUSE2_MCU_FLT</code>. Assertion <strong>shall</strong> be confirmed only once continuous for 50 ms (a brief assertion, for example from inrush when TRANS switches, <strong>shall not</strong> latch). Once confirmed, it <strong>shall</strong> turn <code>VOUT</code> and the transducer branch off, latch the fault (<code>SRS-PROT-023</code>), and enter ERROR — unless a manual request has since been made (<code>SRS-PROT-050</code>), in which case the fault <strong>shall</strong> still be latched and reported but <strong>shall not</strong> force outputs off.</td>
+</tr>
+<tr>
+<td><code>SRS-PROT-021</code></td>
+<td>In NORMAL mode, firmware <strong>shall</strong> monitor board temperature (<code>TC1047A</code>, <code>PF1</code>/ADC1) against an over-temperature limit (default 85.0 °C, set with the <code>limit</code> command and stored in internal EEPROM). After two consecutive samples at or above the limit, it <strong>shall</strong> turn <code>VOUT</code> and the transducer branch off and enter ERROR. In every mode, each trip <strong>shall</strong> be logged as a WARNING event (<code>SRS-MON-032</code>).</td>
+</tr>
+<tr>
+<td><code>SRS-PROT-022</code></td>
+<td>In NORMAL mode, firmware <strong>shall</strong> monitor PAC1934 current readings on the <code>VOUT</code> and <code>+5_TRANS</code> channels against limits (default 1000 mA each, set with the <code>limit</code> command and stored in internal EEPROM). After three consecutive samples above a limit, it <strong>shall</strong> turn <code>VOUT</code> and the transducer branch off and enter ERROR. In every mode, each trip <strong>shall</strong> be logged as a WARNING event (<code>SRS-MON-032</code>). The check is independent of the eFuse's own hardware current limit.</td>
+</tr>
+<tr>
+<td><code>SRS-PROT-023</code></td>
+<td>A latched fault <strong>shall</strong> remain latched until cleared by command: Modbus coil <code>00003</code> or the <code>fault clear</code> console command. The clear <strong>shall</strong> be refused while a fault input is still active. Firmware <strong>shall not</strong> auto-clear a latched fault.</td>
+</tr>
+<tr>
+<td><code>SRS-PROT-024</code></td>
+<td>Because <code>U2</code> (MCU branch) cannot be switched off by firmware, a fault on the MCU branch itself <strong>shall</strong> be reported but <strong>cannot</strong> be remediated by firmware power-cycling itself; only telemetry/fault reporting applies.</td>
+</tr>
+<tr>
+<td><code>SRS-PROT-050</code></td>
+<td>When the regulator check fails, or a limit trips (<code>SRS-PROT-021</code>, <code>SRS-PROT-022</code>), outputs <strong>shall</strong> be off outside MANUAL. MANUAL takes priority and leaves outputs under operator control. A request for NORMAL <strong>shall</strong> clear regulator/limit causes only after the regulator responds and no limit is exceeded. An eFuse latch is cleared separately by <code>fault clear</code> (<code>SRS-PROT-023</code>). The firmware <strong>shall not</strong> reset itself to clear ERROR.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="44-monitoring-telemetry">4.4 Monitoring / telemetry</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SRS-MON-030</code></td>
+<td>Firmware <strong>shall</strong> poll all four PAC1934 channels (<code>VOUT</code>, <code>+12</code> input, <code>+5_TRANS</code>, <code>+5</code>) at a fixed background rate independent of communications activity.</td>
+</tr>
+<tr>
+<td><code>SRS-MON-031</code></td>
+<td>Firmware <strong>shall</strong> sample board temperature at a fixed background rate and make the latest reading available on every communications channel.</td>
+</tr>
+<tr>
+<td><code>SRS-MON-032</code></td>
+<td>Firmware <strong>shall</strong> keep a bounded persistent event log (a 32-slot ring in the 24C04) of fault, mode, and limit events, each stamped with the software clock (<code>SRS-MON-034</code>), retrievable via console and Modbus.</td>
+</tr>
+<tr>
+<td><code>SRS-MON-033</code></td>
+<td>Telemetry values <strong>shall</strong> be available (read-only) in every mode, including ERROR and WARNING, so a fault remains observable after it occurs.</td>
+</tr>
+<tr>
+<td><code>SRS-MON-034</code></td>
+<td>Firmware <strong>shall</strong> keep a software clock (UTC), set from the console (<code>time set</code>) or Modbus (<code>40040</code>–<code>40041</code>) and read from either. The clock <strong>shall</strong> store a checkpoint in internal EEPROM every 15 minutes and on each set, and <strong>shall</strong> restore the last checkpoint after a reset, marked as <code>RESTORED</code>. Each logged event <strong>shall</strong> carry the clock time and its source (<code>UNSET</code>, <code>RESTORED</code>, or <code>SET</code>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="45-communications-general">4.5 Communications (general)</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SRS-COM-040</code></td>
+<td>The Modbus interface <strong>shall</strong> implement a Modbus RTU slave per the register map in <a href="../modbus_implementation/">Modbus RTU implementation</a>. The design draft differences are in <a href="../modbus_implementation/#design-differences">Design differences</a>.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-041</code></td>
+<td>The Modbus slave address <strong>shall</strong> be stored in non-volatile configuration (<code>SRS-CFG-061</code>) and take effect only after reboot.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-042</code></td>
+<td>The PC104 UART <strong>shall</strong> implement the ASCII command set in <a href="../use_cases_commands/#pc104-uart-and-console-command-reference">Use cases &amp; commands</a> plus the bootloader wire protocol (Section 6).</td>
+</tr>
+<tr>
+<td><code>SRS-COM-043</code></td>
+<td>The console UART <strong>shall</strong> implement the same ASCII command set as the PC104 UART, plus maintenance-only commands not exposed to the OBC (e.g. forced bank swap), listed in the same reference table.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-044</code></td>
+<td>Any command that changes <code>VOUT</code> state, transducer-branch state, or configuration <strong>shall</strong> be accepted from at most one channel's request at a time; firmware <strong>shall</strong> serialize command handling so Modbus, PC104 UART, and console cannot race each other.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-045</code></td>
+<td><strong>Revised 2026-10-15</strong> (previously: shall turn <code>VOUT</code> and the transducer branch off, and the mode shall not change). Firmware <strong>shall</strong> enforce a communications watchdog: if no valid Modbus request is received for a timeout (default 5 s, configurable under <code>SRS-CFG-060</code>) after the first request, it <strong>shall</strong> raise a WARNING cause (<code>mode get</code>'s <code>link=</code>), at the same priority as the other WARNING causes (below ERROR and MANUAL). It <strong>shall not</strong> turn <code>VOUT</code> or the transducer branch off by itself. A new valid request clears the cause.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="46-bootloader-and-firmware-update">4.6 Bootloader and firmware update</h3>
+<p>See Section 6 for the full flash layout and protocol design.</p>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SRS-BOOT-070</code></td>
+<td>The MCU flash <strong>shall</strong> be partitioned into a fixed, immutable boot section and two equally-sized application banks (Section 6.1).</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-071</code></td>
+<td>Each application bank <strong>shall</strong> carry a header with image length, CRC32, firmware version, and a validity flag (Section 6.2).</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-072</code></td>
+<td>On every reset, the boot section <strong>shall</strong> validate the CRC32 of the currently active bank before jumping to it; on validation failure it <strong>shall</strong> fall back to the other bank if that bank validates; if neither validates, it <strong>shall</strong> remain in bootloader mode and report the failure over the PC104 UART and console (Section 6.3).</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-073</code></td>
+<td>The bootloader <strong>shall</strong> accept a new image only over the PC104 UART, using the framed protocol in Section 6.4, and <strong>shall not</strong> accept firmware images over Modbus or the console.</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-074</code></td>
+<td>The bootloader <strong>shall</strong> write a new image to the inactive bank, verify its CRC32 after write, and only then mark it valid and switch the active-bank pointer — the previously active bank <strong>shall</strong> remain untouched and valid throughout the update.</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-075</code></td>
+<td>New application firmware <strong>shall</strong> call a "confirm boot" routine within a bounded number of watchdog services after startup; if a newly activated bank fails to confirm within that window, the bootloader <strong>shall</strong> revert the active-bank pointer to the previous bank on the next reset (automatic rollback).</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-076</code></td>
+<td>Entry into bootloader mode from running application code <strong>shall</strong> first force <code>VOUT</code> and the transducer branch to disabled (<code>SRS-PWR-015</code>).</td>
+</tr>
+</tbody>
+</table>
+<h3 id="47-watchdog">4.7 Watchdog</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SRS-WDT-080</code></td>
+<td>Firmware <strong>shall</strong> service the TPL5010 (<code>DONE</code> pulse, <code>PB6</code>) only from a supervisory loop that has confirmed the main control loop, communications handling, and telemetry sampling are all progressing — not from a free-running timer interrupt alone.</td>
+</tr>
+<tr>
+<td><code>SRS-WDT-081</code></td>
+<td>A TPL5010-forced reset <strong>shall</strong> be distinguishable, on the next boot, from a power-cycle or command-issued reset, and <strong>shall</strong> be recorded in the event log and exposed as a telemetry value (reset-reason code).</td>
+</tr>
+<tr>
+<td><code>SRS-WDT-082</code></td>
+<td>Because <code>U2</code> (MCU branch) is always powered, a TPL5010 reset <strong>shall</strong> be sufficient on its own to recover from a hung application without requiring a full power cycle.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="48-configuration-and-non-volatile-storage">4.8 Configuration and non-volatile storage</h3>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SRS-CFG-060</code></td>
+<td>Configurable operating parameters (over-temperature threshold, overcurrent limits, Modbus slave address and baud code, communications-watchdog timeout) <strong>shall</strong> be stored in non-volatile memory. The over-temperature and overcurrent limits <strong>shall</strong> be stored in the ATmega128A internal EEPROM with a checksum, and the other parameters in the same internal EEPROM, in their own record (OI-11).</td>
+</tr>
+<tr>
+<td><code>SRS-CFG-061</code></td>
+<td>The active-bank pointer and per-bank valid/confirmed flags (Section 6.2) <strong>shall</strong> be stored in EEPROM, separate from the application banks' own in-flash headers, so a corrupted flash bank cannot also corrupt the selector.</td>
+</tr>
+<tr>
+<td><code>SRS-CFG-062</code></td>
+<td>Firmware <strong>shall</strong> ship compiled-in safe defaults for every EEPROM-backed parameter and fall back to them if EEPROM read fails or fails a checksum.</td>
+</tr>
+<tr>
+<td><code>SRS-CFG-063</code></td>
+<td>Write-protect (<code>EE_WP</code>) <strong>shall</strong> be asserted by default and only deasserted for the duration of an explicit configuration-write command.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="5-non-functional-requirements">5. Non-functional requirements</h2>
+<table>
+<thead>
+<tr>
+<th>Requirement</th>
+<th>Statement</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SRS-GEN-090</code></td>
+<td>The main control loop period <strong>shall</strong> be bounded and documented, and <strong>shall</strong> be short enough that the communications-watchdog timeout (<code>SRS-COM-045</code>) and TPL5010 service interval (<code>SRS-WDT-080</code>) are both met with margin.</td>
+</tr>
+<tr>
+<td><code>SRS-GEN-091</code></td>
+<td>All shared-resource access (I2C bus to U5/U10/U14; EEPROM; command dispatch across the three serial channels) <strong>shall</strong> be protected against interrupt-context and multi-channel races.</td>
+</tr>
+<tr>
+<td><code>SRS-GEN-092</code></td>
+<td>Firmware <strong>shall</strong> build with a documented toolchain/version and <strong>shall</strong> record the resulting firmware version and build identifier in each application bank's header (<code>SRS-BOOT-071</code>) and in telemetry.</td>
+</tr>
+<tr>
+<td><code>SRS-GEN-093</code></td>
+<td>No requirement in this document overrides a hardware protection function (eFuse current limit, TPL5010 reset); firmware protections in Section 4.3 are supplementary, not a replacement.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="6-bootloader-design-detail">6. Bootloader design detail</h2>
+<h3 id="61-flash-layout-atmega128a-128-kib-total">6.1 Flash layout (ATmega128A, 128 KiB total)</h3>
+<table>
+<thead>
+<tr>
+<th>Region</th>
+<th>Address range</th>
+<th>Size</th>
+<th>Contents</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Bank A</td>
+<td><code>0x00000</code>–<code>0x0EFFF</code></td>
+<td>60 KiB</td>
+<td>Application image A + header</td>
+</tr>
+<tr>
+<td>Bank B</td>
+<td><code>0x0F000</code>–<code>0x1DFFF</code></td>
+<td>60 KiB</td>
+<td>Application image B + header</td>
+</tr>
+<tr>
+<td>Boot section</td>
+<td><code>0x1E000</code>–<code>0x1FFFF</code></td>
+<td>8 KiB</td>
+<td>Immutable bootloader (<code>BOOTSZ</code> fuses), entered on every reset (<code>BOOTRST</code> fuse)</td>
+</tr>
+</tbody>
+</table>
+<p>The boot section is written once during initial programming (via JTAG/ISP) and is not modified by the
+field-update protocol in Section 6.4 — only Bank A and Bank B are ever rewritten by the OBC.</p>
+<h3 id="62-bank-header">6.2 Bank header</h3>
+<p>Each bank begins with a fixed-size header, immediately followed by the application image:</p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Size</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>magic</code></td>
+<td>4 bytes</td>
+<td>Fixed constant identifying a valid header (distinguishes "erased/blank" from "written")</td>
+</tr>
+<tr>
+<td><code>image_len</code></td>
+<td>4 bytes</td>
+<td>Length of the application image in bytes</td>
+</tr>
+<tr>
+<td><code>image_crc32</code></td>
+<td>4 bytes</td>
+<td>CRC32 of the application image (not including the header)</td>
+</tr>
+<tr>
+<td><code>fw_version</code></td>
+<td>2 bytes</td>
+<td>Major/minor firmware version</td>
+</tr>
+<tr>
+<td><code>build_id</code></td>
+<td>4 bytes</td>
+<td>Build number or timestamp</td>
+</tr>
+<tr>
+<td><code>valid</code></td>
+<td>1 byte</td>
+<td>Set only after a successful post-write CRC verification (<code>SRS-BOOT-074</code>)</td>
+</tr>
+<tr>
+<td><code>confirmed</code></td>
+<td>1 byte</td>
+<td>Set by the application itself after boot (<code>SRS-BOOT-075</code>); cleared by the bootloader when it activates a bank</td>
+</tr>
+<tr>
+<td>reserved</td>
+<td>remaining bytes to a round header size</td>
+<td>Padding for future fields</td>
+</tr>
+</tbody>
+</table>
+<p>The active-bank pointer and per-bank <code>valid</code>/<code>confirmed</code> mirror flags also live in EEPROM
+(<code>SRS-CFG-061</code>) so the bootloader's bank-selection decision does not depend solely on reading flash that
+may itself be the thing that is corrupted.</p>
+<h3 id="63-boot-fallback-state-machine">6.3 Boot / fallback state machine</h3>
+<pre><code class="language-mermaid">flowchart TD
+  START[&quot;Reset&quot;] --&gt; READPTR[&quot;Read active-bank pointer (EEPROM)&quot;]
+  READPTR --&gt; CHKACTIVE{&quot;Active bank\nheader valid + CRC OK?&quot;}
+  CHKACTIVE --&gt;|yes| CHKCONFIRM{&quot;Bank confirmed\nwithin last run?&quot;}
+  CHKACTIVE --&gt;|no| CHKOTHER{&quot;Other bank\nheader valid + CRC OK?&quot;}
+  CHKCONFIRM --&gt;|yes| JUMP[&quot;Jump to active bank&quot;]
+  CHKCONFIRM --&gt;|no, previous run never confirmed| SWITCHBACK[&quot;Revert pointer to other bank&quot;] --&gt; CHKOTHER
+  CHKOTHER --&gt;|yes| ACTIVATE[&quot;Set other bank active, clear confirmed flag&quot;] --&gt; JUMP
+  CHKOTHER --&gt;|no| STAY[&quot;Remain in bootloader mode,\nreport failure on PC104 UART/console&quot;]
+</code></pre>
+<h3 id="64-field-update-protocol-pc104-uart">6.4 Field update protocol (PC104 UART)</h3>
+<p>Framed, binary protocol carried over the PC104 UART (<code>USART0</code>, once <code>IF-001</code> is corrected). The bootloader
+only accepts this protocol on the PC104 UART, never on Modbus or the console (<code>SRS-BOOT-073</code>).</p>
+<p><strong>Frame format:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Field</th>
+<th>Size</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SOF</code></td>
+<td>1 byte</td>
+<td>Fixed start-of-frame marker</td>
+</tr>
+<tr>
+<td><code>CMD</code></td>
+<td>1 byte</td>
+<td>Command code (below)</td>
+</tr>
+<tr>
+<td><code>LEN</code></td>
+<td>2 bytes</td>
+<td>Payload length</td>
+</tr>
+<tr>
+<td><code>PAYLOAD</code></td>
+<td><code>LEN</code> bytes</td>
+<td>Command-specific data</td>
+</tr>
+<tr>
+<td><code>CRC16</code></td>
+<td>2 bytes</td>
+<td>CRC16 over <code>CMD</code>+<code>LEN</code>+<code>PAYLOAD</code></td>
+</tr>
+</tbody>
+</table>
+<p><strong>Commands:</strong></p>
+<table>
+<thead>
+<tr>
+<th>Command</th>
+<th>Direction</th>
+<th>Purpose</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>PING</code></td>
+<td>OBC → PDU</td>
+<td>Liveness check; PDU replies with <code>ACK</code></td>
+</tr>
+<tr>
+<td><code>GET_INFO</code></td>
+<td>OBC → PDU</td>
+<td>PDU replies with active bank, per-bank version/valid/confirmed status</td>
+</tr>
+<tr>
+<td><code>ERASE_BANK</code></td>
+<td>OBC → PDU</td>
+<td>Erase the inactive bank only (bootloader refuses to erase the active bank)</td>
+</tr>
+<tr>
+<td><code>WRITE_PAGE</code></td>
+<td>OBC → PDU</td>
+<td>Write one flash page (offset + data) into the inactive bank; PDU replies <code>ACK</code>/<code>NACK</code> per page</td>
+</tr>
+<tr>
+<td><code>FINALIZE_BANK</code></td>
+<td>OBC → PDU</td>
+<td>Supply final image length + CRC32; bootloader verifies, sets <code>valid</code> on success</td>
+</tr>
+<tr>
+<td><code>ACTIVATE_BANK</code></td>
+<td>OBC → PDU</td>
+<td>Switch the active-bank pointer to the just-written bank, clear its <code>confirmed</code> flag</td>
+</tr>
+<tr>
+<td><code>REBOOT</code></td>
+<td>OBC → PDU</td>
+<td>Reset the MCU, re-entering the state machine in Section 6.3</td>
+</tr>
+</tbody>
+</table>
+<p>Update sequence: <code>PING</code> → <code>GET_INFO</code> → <code>ERASE_BANK</code> (inactive) → repeated <code>WRITE_PAGE</code> → <code>FINALIZE_BANK</code>
+→ <code>ACTIVATE_BANK</code> → <code>REBOOT</code>. If the OBC never issues <code>REBOOT</code>, the previously active bank keeps running
+uninterrupted (<code>SRS-BOOT-074</code>), and if the newly activated bank never calls its confirm routine after
+reboot, the rollback in Section 6.3 restores the previous bank automatically (<code>SRS-BOOT-075</code>).</p>
+<h2 id="7-implementation-status">7. Implementation status</h2>
+<p>Status as of 2026-10-05, checked against the firmware tree. Requirement text above is unchanged. Work still open against these items is listed in <a href="../open_issues/">Open issues</a>.</p>
+<p>Legend: <strong>Implemented</strong> = met in firmware. <strong>Partial</strong> = some of the requirement is met. <strong>Pending</strong> = not started.
+<strong>Superseded</strong> = replaced by a different design, see the note. <strong>Not verified</strong> = no evidence either way.</p>
+<p>The mode model in Section 3 is superseded by <a href="../mode_state_machine/">Mode state machine</a>.</p>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Status</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>SRS-COM-001</code></td>
+<td>Implemented</td>
+<td>PC104 UART on USART0 (PE0/PE1). Driver direction fix <code>IF-001</code> is not verified on hardware.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-002</code></td>
+<td>Implemented</td>
+<td>Modbus on USART1: RX on PD2, TX on PD3, direction on PD5. Confirmed on the board 2026-10-06.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-003</code></td>
+<td>Not applicable</td>
+<td>Superseded by <code>SRS-COM-002</code>.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-003</code></td>
+<td>Superseded</td>
+<td>Not needed because <code>SRS-COM-002</code> is implemented.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-004</code></td>
+<td>Implemented</td>
+<td>Console on the software UART (PE3/PE4).</td>
+</tr>
+<tr>
+<td><code>SRS-COM-030</code></td>
+<td>Implemented</td>
+<td>FreeMODBUS frame check: T3.5 framing, address, and CRC. Bench check of noise handling pending.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-005</code></td>
+<td>Not verified</td>
+<td>No interlock keeps the debug UART inactive during PC104 operation.</td>
+</tr>
+<tr>
+<td><code>SRS-PWR-010</code></td>
+<td>Implemented</td>
+<td>VOUT set through the TPS55287 BSP over the shared I2C bus.</td>
+</tr>
+<tr>
+<td><code>SRS-PWR-011</code></td>
+<td>Implemented</td>
+<td>Outputs default off after reset. TRANS off gates VOUT. The PAC1934/EEPROM causes of mode are set by the startup self-test; the TPS55287 is behind the TRANS eFuse (off at boot by design) and is instead checked on demand the first time TRANS is enabled.</td>
+</tr>
+<tr>
+<td><code>SRS-PWR-012</code></td>
+<td>Implemented</td>
+<td>VOUT is turned off before TRANS in both the console and Modbus paths.</td>
+</tr>
+<tr>
+<td><code>SRS-PWR-013</code></td>
+<td>Partial</td>
+<td>The BSP enforces 800–12000 mV and writes/verifies external feedback before setpoint calculation and output enable. If feedback was changed while VOUT was on, it disables VOUT before correction. Calibration (<code>A-4</code>) remains open.</td>
+</tr>
+<tr>
+<td><code>SRS-PWR-014</code></td>
+<td>Implemented</td>
+<td>Checked once a second while TRANS and VOUT are on. Judged samples must be within 5 % of the setpoint (at least 100 mV). The first two checks after a change are skipped. Three judged samples out of tolerance flag a WARNING and log <code>SETPOINT_MISMATCH</code>. Bench confirmation pending.</td>
+</tr>
+<tr>
+<td><code>SRS-PWR-015</code></td>
+<td>Implemented</td>
+<td>TRANS and VOUT are refused in ERROR, unless MANUAL has been requested since (which outranks ERROR). Still refused while a fault is latched, regardless of mode. Bootloader gating waits for OI-16.</td>
+</tr>
+<tr>
+<td><code>SRS-PROT-020</code></td>
+<td>Implemented</td>
+<td>Both fault inputs are read every 6 ms: PC4 for 12V TRANS and PC0 for 12V_MCU. A pin must read continuously active for 50 ms before it is treated as real. Once confirmed, it latches and enters ERROR, turning outputs off — unless MANUAL has been requested, in which case it is still latched and reported but outputs stay under manual control.</td>
+</tr>
+<tr>
+<td><code>SRS-PROT-021</code></td>
+<td>Partial</td>
+<td>In NORMAL: 85.0 °C for two samples turns outputs off and enters ERROR. Each trip is logged as a WARNING event. Set with <code>limit temp</code>, stored in internal EEPROM. Modbus <code>40031</code>. Threshold to be confirmed on the bench.</td>
+</tr>
+<tr>
+<td><code>SRS-PROT-022</code></td>
+<td>Partial</td>
+<td>In NORMAL: 1000 mA for three samples on VOUT or +5_TRANS turns outputs off and enters ERROR. Each trip is logged as a WARNING event. Set with <code>limit vout</code> and <code>limit trans</code>, stored in internal EEPROM. Modbus <code>40032</code> and <code>40033</code>. Limits to be confirmed on the bench.</td>
+</tr>
+<tr>
+<td><code>SRS-PROT-023</code></td>
+<td>Implemented</td>
+<td>Latched in internal EEPROM. Cleared only by an explicit command. The clear is refused while a fault input is active.</td>
+</tr>
+<tr>
+<td><code>SRS-PROT-024</code></td>
+<td>Implemented</td>
+<td>The 12V_MCU fault (PC0) is reported on discrete input 10002 and in <code>fault get</code>. Not remediated, as required.</td>
+</tr>
+<tr>
+<td><code>SRS-PROT-050</code></td>
+<td>Implemented</td>
+<td>ERROR forces both outputs off outside MANUAL. A normal-mode request checks the regulator and limits before clearing those causes; <code>fault clear</code> alone clears an eFuse latch. The firmware does not reset itself. A stored limit ERROR survives reset until a healthy normal-mode request.</td>
+</tr>
+<tr>
+<td><code>SRS-MON-030</code></td>
+<td>Implemented</td>
+<td>PAC1934 read every 1000 ms, independent of communications.</td>
+</tr>
+<tr>
+<td><code>SRS-MON-031</code></td>
+<td>Implemented</td>
+<td>Sampled every 1000 ms, published in <code>SystemData</code>, readable through the <code>temp</code> command and Modbus input register <code>30021</code>.</td>
+</tr>
+<tr>
+<td><code>SRS-MON-032</code></td>
+<td>Partial</td>
+<td>Persistent 24C04 ring, 32 slots, time-stamped. Limit, I2C, setpoint, configuration, and clock events are logged. Fault, mode, and reset events are not yet (OI-10). Read by <code>event get</code> and Modbus <code>30041</code>–<code>30047</code>.</td>
+</tr>
+<tr>
+<td><code>SRS-MON-033</code></td>
+<td>Implemented</td>
+<td>Telemetry is readable in every mode, including ERROR and WARNING.</td>
+</tr>
+<tr>
+<td><code>SRS-MON-034</code></td>
+<td>Implemented</td>
+<td>Software clock set by <code>time set</code> or Modbus, read by <code>time</code> and Modbus <code>30039</code>–<code>30040</code>. Checkpointed to EEPROM every 15 minutes and on each set. Restored after a reset as <code>RESTORED</code>, which is approximate. Events and the clock report their source.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-040</code></td>
+<td>Implemented</td>
+<td>The implemented map is the reference (OI-14). The discrete inputs are final (OI-28).</td>
+</tr>
+<tr>
+<td><code>SRS-COM-041</code></td>
+<td>Implemented</td>
+<td>The address is in the configuration record and applied at the next boot. Set with <code>config set address</code>.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-042</code></td>
+<td>Partial</td>
+<td>The firmware names are kept, by decision (OI-13). See <a href="../command_reference/">Current command reference</a>. The bootloader protocol is not done (OI-16).</td>
+</tr>
+<tr>
+<td><code>SRS-COM-043</code></td>
+<td>Partial</td>
+<td>Same table for console and UART0, including <code>status</code> and <code>reset</code>. No maintenance-only commands.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-044</code></td>
+<td>Implemented</td>
+<td>One command runs at a time. Only one port owns the response buffer.</td>
+</tr>
+<tr>
+<td><code>SRS-COM-045</code></td>
+<td>Implemented</td>
+<td>Raises the <code>link</code> WARNING cause after the configured timeout (default 5 s, 1 to 60 s) without a valid Modbus request; outputs are not turned off by this on their own. Set with <code>config set timeout</code>.</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-070</code></td>
+<td>Pending</td>
+<td>No bootloader.</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-071</code></td>
+<td>Pending</td>
+<td>No bank header.</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-072</code></td>
+<td>Pending</td>
+<td>No CRC check at reset.</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-073</code></td>
+<td>Pending</td>
+<td>No firmware image path.</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-074</code></td>
+<td>Pending</td>
+<td>No bank write or switch.</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-075</code></td>
+<td>Pending</td>
+<td>No confirm or rollback.</td>
+</tr>
+<tr>
+<td><code>SRS-BOOT-076</code></td>
+<td>Pending</td>
+<td>No bootloader entry.</td>
+</tr>
+<tr>
+<td><code>SRS-WDT-080</code></td>
+<td>Implemented</td>
+<td>Five clients check in from scheduled tasks: console, heartbeat, Modbus (5 ms task), rail monitor, and temperature. The TPL5010 window is 10 s (OI-25).</td>
+</tr>
+<tr>
+<td><code>SRS-WDT-081</code></td>
+<td>Pending</td>
+<td>Reset reason is not read or logged.</td>
+</tr>
+<tr>
+<td><code>SRS-WDT-082</code></td>
+<td>Implemented</td>
+<td>The TPL5010 reset is hardware-level and recovers a hung application.</td>
+</tr>
+<tr>
+<td><code>SRS-CFG-060</code></td>
+<td>Implemented</td>
+<td>The limits, slave address, baud code, and communications timeout are stored in the ATmega128A internal EEPROM with a checksum. The limits can also be set over Modbus <code>40031</code>–<code>40033</code>.</td>
+</tr>
+<tr>
+<td><code>SRS-CFG-061</code></td>
+<td>Pending</td>
+<td>Depends on the bootloader.</td>
+</tr>
+<tr>
+<td><code>SRS-CFG-062</code></td>
+<td>Implemented</td>
+<td>The limits and the configuration record have compiled defaults, used when a record is blank or damaged. <code>config get</code> shows <code>source=DEFAULT</code>. LED timing has its own defaults.</td>
+</tr>
+<tr>
+<td><code>SRS-CFG-063</code></td>
+<td>Partial, by decision</td>
+<td>The 24C04 write-protect is asserted by default and released only during a write. Internal EEPROM has no write-protect pin and its writes are not gated, by decision: configuration and limits can be set from the console and, for the limits, from Modbus <code>40031</code>–<code>40033</code>.</td>
+</tr>
+<tr>
+<td><code>SRS-GEN-090</code></td>
+<td>Partial</td>
+<td>The tick is bounded. The worst-case pass length is not measured. See <a href="../scheduler_design/#9-risks-and-limits">Scheduler design</a>.</td>
+</tr>
+<tr>
+<td><code>SRS-GEN-091</code></td>
+<td>Partial</td>
+<td>Scheduler state is protected with atomic blocks. I2C arbitration is not analyzed.</td>
+</tr>
+<tr>
+<td><code>SRS-GEN-092</code></td>
+<td>Partial</td>
+<td>Version is reported through Modbus and the <code>version</code> command. Build ID is not reported, and no bank header exists.</td>
+</tr>
+<tr>
+<td><code>SRS-GEN-093</code></td>
+<td>Implemented</td>
+<td>Hardware protections remain in place; firmware checks are additional.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="8-status-of-design-pages">8. Status of design pages</h2>
+<ul>
+<li>The Modbus register map in <a href="../use_cases_commands/#modbus-rtu-interface">Use cases</a> is superseded by <a href="../modbus_implementation/">Modbus RTU implementation</a>.</li>
+<li>The command reference in <a href="../use_cases_commands/#pc104-uart-and-console-command-reference">Use cases</a> is superseded by <a href="../command_reference/">Current command reference</a>.</li>
+<li>Section 3 now matches the implementation. Section 6 (bootloader) is still planned.</li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../hardware_overview/" class="btn btn-neutral float-left" title="Hardware overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../use_cases_commands/" class="btn btn-neutral float-right" title="Use cases, user stories & commands">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../hardware_overview/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../use_cases_commands/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../javascripts/mermaid.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Hardware overview - DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Hardware overview";
+        var mkdocs_page_input_path = "hardware_overview.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../current_firmware/">Current firmware architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../code_architecture/">Code architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../scheduler_design/">Scheduler design</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../command_reference/">Current command reference</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Hardware overview</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#system-block-diagram-inputs-and-outputs">System block diagram — inputs and outputs</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#power-tree">Power tree</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#controllable-monitorable-elements">Controllable / monitorable elements</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#mcu-serial-resource-map-as-wired-today">MCU serial resource map (as wired today)</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#connector-io-relevant-to-firmware">Connector I/O relevant to firmware</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#known-hardware-issues-that-gate-firmware-bring-up">Known hardware issues that gate firmware bring-up</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../software_requirements/">Software requirements</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../use_cases_commands/">Use cases, user stories & commands</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../modbus_implementation/">Modbus RTU implementation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../open_issues/">Open issues</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../mode_state_machine/">Mode state machine</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/versioning/">Versioning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/unit_tests/">Unit tests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Hardware overview</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="hardware-overview">Hardware overview</h1>
+<p>Source: hardware review at <code>DAL\REVIEW\review_dal_pdu_docs\docs</code> (schematic rev 1.1.0, BOM
+<code>DAL_PDU_V1.0.xlsx</code>). This page restates the parts of that review firmware needs, plus the software-facing
+interpretation (which pin drives what, which channel carries which protocol). It does not repeat every
+BOM/layout finding — see the review package for the full issue register.</p>
+<h2 id="system-block-diagram-inputs-and-outputs">System block diagram — inputs and outputs</h2>
+<pre><code class="language-mermaid">flowchart LR
+  subgraph EXT[&quot;External, over PC104 board-stack (H1/H2)&quot;]
+    PWRIN[&quot;+12_EPS input&quot;]
+    MODBUS[&quot;RS-485 A/B\nOBC Modbus master&quot;]
+    UARTPC[&quot;RS-232 TXD/RXD\nOBC UART: commands + bootloader&quot;]
+    CANBUS[&quot;CAN_H/CAN_L\nreserved, not in software scope&quot;]
+    I2CPC[&quot;Buffered I2C SDA/SCL\nreserved, not in software scope&quot;]
+  end
+
+  subgraph LOCAL[&quot;Local, bench/ground only&quot;]
+    CONSOLE[&quot;P2 console UART&quot;]
+    DEBUGP[&quot;P1 debug UART&quot;]
+    JTAG[&quot;JTAG1/JTAG2&quot;]
+  end
+
+  subgraph PDU[&quot;DAL_PDU&quot;]
+    EFUSE[&quot;eFuse branches\nU1 transducer / U2 MCU&quot;]
+    REGS[&quot;Regulators\nU3/U4 fixed 5V, U5 variable buck-boost&quot;]
+    MON[&quot;PAC1934 4-ch monitor\n+ TC1047A temperature&quot;]
+    MCU[&quot;ATmega128A (U6)\nfirmware&quot;]
+    NVM[&quot;24LC04B EEPROM\nevent log + boot-bank selector&quot;]
+    WDT[&quot;TPL5010 watchdog&quot;]
+  end
+
+  subgraph OUT[&quot;Outputs, P5/P8 load connectors&quot;]
+    VOUT[&quot;VOUT — programmable rail\n(the variable power supply)&quot;]
+    V5T[&quot;+5_TRANS — fixed 5 V&quot;]
+    LEDS[&quot;Status LEDs&quot;]
+  end
+
+  PWRIN --&gt; EFUSE --&gt; REGS
+  MODBUS &lt;--&gt; MCU
+  UARTPC &lt;--&gt; MCU
+  CONSOLE &lt;--&gt; MCU
+  DEBUGP &lt;-.-&gt; MCU
+  JTAG &lt;-.-&gt; MCU
+  CANBUS -.-&gt; MCU
+  I2CPC -.-&gt; MCU
+  MCU &lt;--&gt; MON
+  MCU &lt;--&gt; NVM
+  MCU &lt;--&gt; WDT
+  MCU --&gt;|I2C setpoint| REGS
+  MCU --&gt;|branch enable| EFUSE
+  REGS --&gt; VOUT
+  REGS --&gt; V5T
+  MCU --&gt; LEDS
+</code></pre>
+<p><code>CAN</code> and the buffered PC104 <code>I2C</code> bus are populated and electrically valid data paths per the review,
+but neither is in scope for this software design phase; they are shown as reserved.</p>
+<h2 id="power-tree">Power tree</h2>
+<pre><code class="language-mermaid">flowchart TD
+  A[&quot;H1/H2: +12_EPS&quot;] --&gt; R51[&quot;R51 10 mΩ shunt\n(PAC1934 ch: input current)&quot;] --&gt; B[&quot;+12&quot;]
+  B --&gt; U1[&quot;U1 eFuse\nMCU_EFUSE_EN-controlled&quot;] --&gt; T12[&quot;+12_TRANS&quot;]
+  B --&gt; U2[&quot;U2 eFuse\nalways enabled&quot;] --&gt; M12[&quot;+12_MCU&quot;]
+  T12 --&gt; U3[&quot;U3 LMR33630&quot;] --&gt; R53[&quot;R53 10 mΩ&quot;] --&gt; V5T[&quot;+5_TRANS\n(fixed, load rail)&quot;]
+  M12 --&gt; U4[&quot;U4 LMR33630&quot;] --&gt; R55[&quot;R55 10 mΩ&quot;] --&gt; V5[&quot;+5\n(MCU/logic supply)&quot;]
+  T12 --&gt; U5[&quot;U5 TPS55287\nI2C-programmable buck-boost&quot;] --&gt; R50[&quot;R50 10 mΩ&quot;] --&gt; VO[&quot;VOUT\n(variable, commanded rail)&quot;]
+  V5 --&gt; LOGIC[&quot;MCU + monitors + transceivers&quot;]
+  V5T --&gt; PLOAD[&quot;P5/P8 outputs&quot;]
+  VO --&gt; PLOAD
+</code></pre>
+<p><strong>Firmware-relevant consequence:</strong> the MCU's own 5 V logic supply (<code>+12_MCU</code> → U4 → <code>+5</code>) and the
+transducer branch (<code>+12_TRANS</code> → U1/U3/U5) share the same upstream <code>+12</code> rail but are independently
+eFuse-protected. <code>U1</code> (transducer branch) is the only branch the MCU can switch off
+(<code>MCU_EFUSE_EN</code> → Q1 → U1 EN/UVLO); <code>U2</code> (MCU's own branch) is always-enabled by its divider, so firmware
+cannot power itself off — good for keeping the MCU alive to service a fault, but it means a fault that
+trips <code>U1</code> does not remove power from the MCU's own supervisory logic.</p>
+<h2 id="controllable-monitorable-elements">Controllable / monitorable elements</h2>
+<table>
+<thead>
+<tr>
+<th>Element</th>
+<th>Device</th>
+<th>Firmware access</th>
+<th>Role</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Variable output voltage</td>
+<td>U5 TPS55287</td>
+<td>I2C (shared TWI bus, PD0/PD1)</td>
+<td>The commanded "variable power supply" rail (<code>VOUT</code>)</td>
+</tr>
+<tr>
+<td>Transducer branch enable</td>
+<td>U1 TPS259470</td>
+<td>GPIO <code>MCU_EFUSE_EN</code> → Q1</td>
+<td>Switches <code>+12_TRANS</code> (and everything downstream: U3, U5) on/off</td>
+</tr>
+<tr>
+<td>MCU branch status</td>
+<td>U2 TPS259470</td>
+<td>Fault flag only (<code>EFUSE2_MCU_FLT</code>)</td>
+<td>Always-on; not switchable by firmware</td>
+</tr>
+<tr>
+<td>Rail telemetry (V + I, 4 channels)</td>
+<td>U10 PAC1934</td>
+<td>I2C (shared TWI bus)</td>
+<td><code>VOUT</code>, <code>+12</code> input, <code>+5_TRANS</code>, <code>+5</code> — voltage and current each</td>
+</tr>
+<tr>
+<td>eFuse fault flags</td>
+<td>U1/U2 <code>..._MCU_FLT</code></td>
+<td>GPIO input, pulled up to +5. PC4 is the U1 (12V TRANS) flag and PC0 is the U2 (12V_MCU) flag.</td>
+<td>Overcurrent/fault latch per branch</td>
+</tr>
+<tr>
+<td>PAC1934 alert</td>
+<td>U10 PAC1934</td>
+<td><code>PE7</code> (<code>MCU_PAC1934_INT</code>)</td>
+<td>Not used. The firmware polls the PAC1934 each second.</td>
+</tr>
+<tr>
+<td>Board temperature</td>
+<td>U11 TC1047A</td>
+<td>ADC, <code>PF1</code>/<code>ADC1</code> (confirmed)</td>
+<td>Analog voltage proportional to temperature</td>
+</tr>
+<tr>
+<td>Event log / boot-bank selector</td>
+<td>U14 24LC04B EEPROM</td>
+<td>I2C (shared TWI bus)</td>
+<td>Boot-bank pointer, calibration, event log. The Modbus address and baud are in the ATmega128A internal EEPROM (OI-11).</td>
+</tr>
+<tr>
+<td>Watchdog service</td>
+<td>U13 TPL5010-Q1</td>
+<td>GPIO <code>WAKE</code> in on PB5, <code>DONE</code> out on PB6, <code>RSTn</code> reset</td>
+<td>External hardware watchdog independent of the MCU's own timers</td>
+</tr>
+</tbody>
+</table>
+<h2 id="mcu-serial-resource-map-as-wired-today">MCU serial resource map (as wired today)</h2>
+<p>The ATmega128A has exactly <strong>two hardware USARTs</strong>: <code>USART0</code> (PE0/PE1) and <code>USART1</code> (PD2/PD3). The
+schematic assigns three serial roles across four different pin pairs, only one of which lands on a real
+USART:</p>
+<table>
+<thead>
+<tr>
+<th>Net / role</th>
+<th>Connector</th>
+<th>MCU pins</th>
+<th>Hardware peripheral</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>PC104 UART (OBC commands + bootloader)</td>
+<td>H1-19/H1-20 via U12 SN65C3232</td>
+<td>PE0/PE1</td>
+<td><code>USART0</code> — real hardware UART</td>
+<td>Wiring valid; <strong>U12 driver/receiver direction is reversed (<code>IF-001</code>, blocker)</strong></td>
+</tr>
+<tr>
+<td>Local console</td>
+<td>P2</td>
+<td>PE3/PE4</td>
+<td><code>OC3A</code>/<code>AIN1</code>, <code>OC3B</code>/<code>INT4</code> — <strong>not a USART</strong></td>
+<td>Mislabeled net; <strong>not realizable as hardware UART (<code>MCU-001</code>, blocker)</strong></td>
+</tr>
+<tr>
+<td>RS-485 (Modbus to OBC)</td>
+<td>H1-37/H1-38 via U9 MAX485</td>
+<td>USART1: PD2 (RX) / PD3 (TX); PD5 (DIR), confirmed on the board</td>
+<td>Hardware USART1</td>
+<td>Firmware uses the hardware UART. The review schematic (rev 1.1.0) still shows PD4/PD5/PD6, so it must be updated. The board uses PD2 (RX), PD3 (TX), and PD5 (DIR), confirmed 2026-10-06.</td>
+</tr>
+<tr>
+<td>Debug UART</td>
+<td>P1</td>
+<td>shares <code>USART0</code> logic</td>
+<td><code>USART0</code></td>
+<td>Conflicts with the PC104 UART path until <code>IF-001</code> is resolved; bench/ground use only</td>
+</tr>
+<tr>
+<td>— unused —</td>
+<td>—</td>
+<td>PD2/PD3</td>
+<td><code>USART1</code> — real hardware UART, currently unassigned</td>
+<td>Spare hardware UART</td>
+</tr>
+</tbody>
+</table>
+<p>This shapes the whole communications design — see
+<a href="../software_requirements/#41-serial-resource-allocation">Serial resource allocation</a> for how the three
+required channels (PC104 UART, console, Modbus/RS-485) are assigned to these pins, and why.</p>
+<h2 id="connector-io-relevant-to-firmware">Connector I/O relevant to firmware</h2>
+<table>
+<thead>
+<tr>
+<th>Connector</th>
+<th>Pins</th>
+<th>Signal</th>
+<th>Direction (at PDU)</th>
+<th>Used for</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>H1</td>
+<td>1, 3</td>
+<td><code>CAN_L</code>, <code>CAN_H</code></td>
+<td>Bidirectional</td>
+<td>Reserved, not in software scope</td>
+</tr>
+<tr>
+<td>H1</td>
+<td>19, 20</td>
+<td><code>TXD_RS232</code>, <code>RXD_RS232</code></td>
+<td>Intended out/in (currently reversed, <code>IF-001</code>)</td>
+<td>PC104 UART: commands + bootloader</td>
+</tr>
+<tr>
+<td>H1</td>
+<td>37, 38</td>
+<td><code>RS485_B</code>, <code>RS485_A</code></td>
+<td>Bidirectional</td>
+<td>Modbus RTU to/from OBC</td>
+</tr>
+<tr>
+<td>H1</td>
+<td>44, 46</td>
+<td><code>PC104_I2C_SDA/SCL</code> (buffered)</td>
+<td>Bidirectional</td>
+<td>Reserved, not in software scope</td>
+</tr>
+<tr>
+<td>H1</td>
+<td>45</td>
+<td><code>MCU_I2C_IRQ2</code></td>
+<td>Input</td>
+<td>Reserved</td>
+</tr>
+<tr>
+<td>H1/H2</td>
+<td>per sheet 14</td>
+<td><code>+12_EPS</code>, <code>+5</code>, PGND</td>
+<td>Power in/out</td>
+<td>Board-stack power; exact pin list needs the native netlist (<code>CON-001</code>)</td>
+</tr>
+<tr>
+<td>P2</td>
+<td>4-pin</td>
+<td><code>+5</code>, <code>CONSOLE_MCU_RX</code>, <code>MCU_CONSOLE_TX</code>, PGND</td>
+<td>Local UART</td>
+<td>Console (bench/ground)</td>
+</tr>
+<tr>
+<td>P1</td>
+<td>4-pin</td>
+<td><code>+5</code>, <code>RS232_MCU_RX</code>, <code>MCU_RS232_TX</code>, PGND</td>
+<td>Local UART</td>
+<td>Debug (bench/ground)</td>
+</tr>
+<tr>
+<td>P5/P8</td>
+<td>—</td>
+<td><code>VOUT</code>, <code>+5_TRANS</code>, PGND/shield</td>
+<td>Output</td>
+<td>Load outputs</td>
+</tr>
+<tr>
+<td>JTAG1/JTAG2</td>
+<td>4-pin ea.</td>
+<td>TDO/TCK/TDI/TMS/RESET</td>
+<td>Programming</td>
+<td>In-circuit programming during bring-up</td>
+</tr>
+</tbody>
+</table>
+<p>Per the review, <code>H1</code>/<code>H2</code> are drawn as 50-pin symbols against a 52-contact BOM part (<code>CON-001</code>), and
+several connectors (<code>P2</code>, <code>P3</code>, <code>P5</code>, <code>P6</code>, <code>P8</code>, <code>P9</code>, JTAG headers) have no confirmed BOM line or mate
+(<code>CON-002</code>). Firmware only depends on the signal-level assignments above, not on the mechanical connector
+resolution, but final connector pinout must be confirmed against the native netlist before harness/cable
+design.</p>
+<h2 id="known-hardware-issues-that-gate-firmware-bring-up">Known hardware issues that gate firmware bring-up</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Severity</th>
+<th>Status</th>
+<th>Finding</th>
+<th>Why firmware cares</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>MCU-001</code></td>
+<td>Blocker</td>
+<td>Decided: software UART (<code>OI-30</code>)</td>
+<td>Console TX/RX are on <code>PE3</code>/<code>PE4</code>, not a USART pair</td>
+<td>The console is a software UART on those pins.</td>
+</tr>
+<tr>
+<td><code>IF-001</code></td>
+<td>Blocker</td>
+<td>Open</td>
+<td>RS-232 driver/receiver direction reversed at U12</td>
+<td>PC104 UART (commands + bootloader image transfer) does not function electrically until fixed</td>
+</tr>
+<tr>
+<td><code>BOM-001</code></td>
+<td>Blocker</td>
+<td>Open</td>
+<td>BOM systematically disagrees with schematic</td>
+<td>Regenerate the BOM from the schematic, then compare it with the firmware assumptions in the A-2 row</td>
+</tr>
+<tr>
+<td><code>BOM-002</code></td>
+<td>Blocker</td>
+<td>Decided: 12 MHz</td>
+<td>The board uses a 12 MHz crystal. The schematic still shows 16 MHz</td>
+<td>Firmware <code>F_CPU</code> is 12 MHz. The schematic and BOM must follow</td>
+</tr>
+<tr>
+<td><code>BOM-003</code></td>
+<td>Blocker</td>
+<td>Open</td>
+<td>BOM can install near-shorts where the schematic needs pull-ups or shunts</td>
+<td>Resistor values must match the schematic before bring-up</td>
+</tr>
+<tr>
+<td><code>I2C-001</code></td>
+<td>Major</td>
+<td>Confirmed: 4.7 kΩ</td>
+<td>SDA/SCL pull-ups are 4.7 kΩ as fitted</td>
+<td>Meets the I2C timing the firmware assumes. Fit the BOM to match</td>
+</tr>
+<tr>
+<td><code>MCU-002</code></td>
+<td>Major</td>
+<td>Confirmed</td>
+<td>Reset network is 10 kΩ / 0.1 µF</td>
+<td>Reset timing is about 1 ms, which keeps the boot-cause logic correct</td>
+</tr>
+<tr>
+<td><code>IF-002</code></td>
+<td>Major</td>
+<td>Accepted as-is (<code>A-3</code>)</td>
+<td>RS-485 idle-bias differential is about 30 mV</td>
+<td>Modbus framing must tolerate idle noise (<code>SRS-COM-030</code>)</td>
+</tr>
+<tr>
+<td><code>PWR-002</code></td>
+<td>Major</td>
+<td>Partly decided</td>
+<td>No worst-case budget is documented. The overcurrent default is now 1 A</td>
+<td>The 1 A default is set. Confirm it against the eFuse ILIM values on the bench</td>
+</tr>
+<tr>
+<td><code>PWR-004</code></td>
+<td>Minor</td>
+<td>Unused by decision</td>
+<td>U3/U4 <code>PG</code> (power-good) pins are not routed to the MCU</td>
+<td>Rail health comes from PAC1934 readings (<code>A-5</code>)</td>
+</tr>
+<tr>
+<td><code>MON-001</code></td>
+<td>Minor</td>
+<td>Decided: 5 %</td>
+<td>PAC1934 accuracy</td>
+<td>The readback tolerance (OI-06) is also 5 %, so it stays consistent</td>
+</tr>
+<tr>
+<td><code>OI-29</code></td>
+<td>Blocker</td>
+<td>Resolved</td>
+<td>Pins confirmed: PC4 is the 12 V TRANS fault, PC0 the 12 V_MCU fault, WAKE is PB5. The PAC1934 INT is on PE7 (not used by firmware)</td>
+<td>The firmware pins match the board</td>
+</tr>
+</tbody>
+</table>
+<p>Full detail, calculations, and the remaining open items (connector mating, ESD/surge protection, layout
+evidence) live in the review package's issue register at
+<code>DAL\REVIEW\review_dal_pdu_docs\docs\issue_register.md</code> (outside this mkdocs site, since it belongs to a
+separate hardware-review project).</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../command_reference/" class="btn btn-neutral float-left" title="Current command reference"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../software_requirements/" class="btn btn-neutral float-right" title="Software requirements">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../command_reference/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../software_requirements/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../javascripts/mermaid.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

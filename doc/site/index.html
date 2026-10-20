@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" /><meta name="description" content="Firmware/software requirements, hardware interface summary, and command reference for the DAL_PDU variable power supply" />
+      <link rel="shortcut icon" href="img/favicon.ico" />
+    <title>DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Overview";
+        var mkdocs_page_input_path = "index.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href="." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="./search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Overview</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#purpose">Purpose</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#source-hardware-evidence">Source hardware evidence</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#document-map">Document map</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#key-assumptions-carried-through-every-page">Key assumptions carried through every page</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="current_firmware/">Current firmware architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="code_architecture/">Code architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="scheduler_design/">Scheduler design</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="command_reference/">Current command reference</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="hardware_overview/">Hardware overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="software_requirements/">Software requirements</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="use_cases_commands/">Use cases, user stories & commands</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="modbus_implementation/">Modbus RTU implementation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="open_issues/">Open issues</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="mode_state_machine/">Mode state machine</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="code_implementation/versioning/">Versioning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="code_implementation/unit_tests/">Unit tests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href=".">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href="." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Overview</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="dal_pdu-software-design">DAL_PDU software design</h1>
+<h2 id="purpose">Purpose</h2>
+<p>DAL_PDU is the power distribution unit board of the IGRVT-50 PC104 stack. The current
+ATmega128A firmware controls a TRANS eFuse, heartbeat LED, and TPS55287 variable output;
+it offers text commands on UART0 and the software console, plus a Modbus RTU register
+subset on USART1. The broader design calls for power telemetry, fault logging, and a
+dual-bank bootloader; those features are not yet implemented.</p>
+<p>Start with <a href="current_firmware/">Current firmware architecture</a> for implemented modules
+and runtime flow, and <a href="command_reference/">Current command reference</a> for commands
+available today. The requirements and use-case pages also describe planned features.</p>
+<h2 id="source-hardware-evidence">Source hardware evidence</h2>
+<p>All hardware facts in this documentation set are drawn from the independent hardware review at:</p>
+<pre><code>D:\PROJECT\LIINSPACE\DAL\REVIEW\review_dal_pdu_docs\docs
+</code></pre>
+<p>which covers <code>SpaceLiinTech_BEE_DAL_PDU_HW_V1.0</code> (schematic PDF revision 1.1.0, dated 15-Sep-2026; BOM
+<code>DAL_PDU_V1.0.xlsx</code>). That review's own conclusion is <strong>"Not ready for fabrication or assembly"</strong> — three
+blocking issues and several major issues are still open. See
+<a href="hardware_overview/#known-hardware-issues-that-gate-firmware-bring-up">Hardware overview</a> for the
+subset that directly constrains this software design, and treat the full issue register in the review
+package as the authority for hardware release status.</p>
+<h2 id="document-map">Document map</h2>
+<table>
+<thead>
+<tr>
+<th>Page</th>
+<th>Content</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><a href="current_firmware/">Current firmware architecture</a></td>
+<td>Implemented layers, tasks, interfaces, and tests</td>
+</tr>
+<tr>
+<td><a href="command_reference/">Current command reference</a></td>
+<td>All implemented text commands with request/response examples</td>
+</tr>
+<tr>
+<td><a href="modbus_implementation/">Modbus RTU implementation</a></td>
+<td>Implemented Modbus configuration and register subset</td>
+</tr>
+<tr>
+<td><a href="hardware_overview/">Hardware overview</a></td>
+<td>Block diagram, power tree, connector I/O, and the MCU pin/peripheral map firmware has to live with</td>
+</tr>
+<tr>
+<td><a href="software_requirements/">Software requirements</a></td>
+<td>Functional and non-functional requirements: power control, protection, telemetry, communications, bootloader, watchdog, configuration</td>
+</tr>
+<tr>
+<td><a href="use_cases_commands/">Use cases, user stories &amp; commands</a></td>
+<td>Design targets and draft Modbus register map; links to the implemented command reference</td>
+</tr>
+</tbody>
+</table>
+<h2 id="key-assumptions-carried-through-every-page">Key assumptions carried through every page</h2>
+<ol>
+<li>Hardware blocker <code>IF-001</code> (RS-232 driver/receiver reversed) is corrected before any firmware bring-up. The console is the software UART on PE3/PE4 (<code>MCU-001</code>, decided); see
+   <a href="hardware_overview/#known-hardware-issues-that-gate-firmware-bring-up">Hardware overview</a>.</li>
+<li>The ATmega128A has exactly two hardware USARTs (<code>USART0</code> on PE0/PE1, <code>USART1</code> on PD2/PD3). All three
+   required serial channels (PC104 RS-232, local console, RS-485/Modbus) must be allocated across those
+   two USARTs plus one software (bit-banged) UART — see
+   <a href="software_requirements/#41-serial-resource-allocation">Serial resource allocation</a>.</li>
+<li>The implemented Modbus map and ASCII commands are described on the current-firmware pages. Additional registers and commands in the requirements remain design targets.</li>
+</ol>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="current_firmware/" class="btn btn-neutral float-right" title="Current firmware architecture">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+    
+      <span><a href="current_firmware/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = ".";</script>
+    <script src="js/theme_extra.js"></script>
+    <script src="js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="javascripts/mermaid.js"></script>
+      <script src="search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
+
+<!--
+MkDocs version : 1.6.1
+Build Date UTC : 2026-10-16 01:59:38.446640+00:00
+-->

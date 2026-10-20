@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Use cases, user stories & commands - DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Use cases, user stories \u0026 commands";
+        var mkdocs_page_input_path = "use_cases_commands.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../current_firmware/">Current firmware architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../code_architecture/">Code architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../scheduler_design/">Scheduler design</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../command_reference/">Current command reference</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../hardware_overview/">Hardware overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../software_requirements/">Software requirements</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Use cases, user stories & commands</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#actors">Actors</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#use-cases">Use cases</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#user-stories">User stories</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#modbus-rtu-interface">Modbus RTU interface</a>
+        <ul>
+    <li class="toctree-l3"><a class="reference internal" href="#coils-readwrite-fc-010515">Coils (read/write, FC 01/05/15)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#discrete-inputs-read-only-fc-02">Discrete inputs (read-only, FC 02)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#input-registers-read-only-fc-04">Input registers (read-only, FC 04)</a>
+    </li>
+    <li class="toctree-l3"><a class="reference internal" href="#holding-registers-readwrite-fc-030616">Holding registers (read/write, FC 03/06/16)</a>
+    </li>
+        </ul>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#pc104-uart-and-console-command-reference">PC104 UART and console command reference</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#implementation-status">Implementation status</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#superseded-sections">Superseded sections</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../modbus_implementation/">Modbus RTU implementation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../open_issues/">Open issues</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../mode_state_machine/">Mode state machine</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/versioning/">Versioning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/unit_tests/">Unit tests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Use cases, user stories & commands</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="use-cases-user-stories-commands">Use cases, user stories &amp; commands</h1>
+<p>This page records the wider design targets. For implemented behavior, see
+<a href="../current_firmware/">Current firmware architecture</a>,
+<a href="../command_reference/">Current text command reference</a>, and
+<a href="../modbus_implementation/">Modbus RTU implementation</a>.</p>
+<h2 id="actors">Actors</h2>
+<table>
+<thead>
+<tr>
+<th>Actor</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><strong>OBC</strong></td>
+<td>On-Board Computer; Modbus master over RS-485, and the sole client of the PC104 UART for supplementary commands and firmware updates</td>
+</tr>
+<tr>
+<td><strong>Ground/bench technician</strong></td>
+<td>Human operator on the local console (<code>P2</code>) during integration, test, or troubleshooting</td>
+</tr>
+<tr>
+<td><strong>DAL_PDU firmware</strong></td>
+<td>The system under design; Modbus slave, PC104 UART/console command handler, bootloader host</td>
+</tr>
+</tbody>
+</table>
+<h2 id="use-cases">Use cases</h2>
+<table>
+<thead>
+<tr>
+<th>ID</th>
+<th>Use case</th>
+<th>Primary actor</th>
+<th>Summary</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UC-1</code></td>
+<td>Set variable output voltage</td>
+<td>OBC</td>
+<td>OBC writes a <code>VOUT</code> setpoint over Modbus; PDU applies it via U5 and confirms via telemetry readback</td>
+</tr>
+<tr>
+<td><code>UC-2</code></td>
+<td>Enable/disable transducer branch</td>
+<td>OBC</td>
+<td>OBC toggles the <code>U1</code> eFuse branch that feeds <code>VOUT</code> and <code>+5_TRANS</code> loads</td>
+</tr>
+<tr>
+<td><code>UC-3</code></td>
+<td>Read telemetry</td>
+<td>OBC</td>
+<td>OBC polls voltage/current on all four monitored rails plus board temperature</td>
+</tr>
+<tr>
+<td><code>UC-4</code></td>
+<td>Handle a protection fault</td>
+<td>DAL_PDU firmware</td>
+<td>An eFuse fault latches and turns outputs off (WARNING). Overtemperature or overcurrent in NORMAL turns outputs off and enters ERROR. Each trip is logged. OBC observes and clears the latch</td>
+</tr>
+<tr>
+<td><code>UC-5</code></td>
+<td>Update firmware</td>
+<td>OBC</td>
+<td>OBC pushes a new image to the inactive bank over the PC104 UART and activates it, with automatic rollback if it fails to confirm</td>
+</tr>
+<tr>
+<td><code>UC-6</code></td>
+<td>Local diagnostics</td>
+<td>Ground/bench technician</td>
+<td>Technician queries status, forces states, and inspects the event log from the console during bring-up/test</td>
+</tr>
+<tr>
+<td><code>UC-7</code></td>
+<td>Recover from a hang</td>
+<td>DAL_PDU firmware</td>
+<td>TPL5010 watchdog resets the MCU if the control loop stops servicing it; reset reason is recorded and reported</td>
+</tr>
+<tr>
+<td><code>UC-8</code></td>
+<td>Power-up sequencing</td>
+<td>DAL_PDU firmware</td>
+<td>On every reset, firmware runs self-test and starts in <code>Standby</code> with <code>VOUT</code> and the transducer branch disabled until commanded</td>
+</tr>
+</tbody>
+</table>
+<h2 id="user-stories">User stories</h2>
+<ul>
+<li>As the <strong>OBC</strong>, I want to set the <code>VOUT</code> setpoint and read back the actual output voltage/current, so
+  that I can operate the DAL_PDU as a closed-loop variable power supply for downstream transducers.</li>
+<li>As the <strong>OBC</strong>, I want the transducer branch and <code>VOUT</code> to default to disabled after any reset, so that
+  a PDU reboot never unexpectedly re-energizes a load.</li>
+<li>As the <strong>OBC</strong>, I want a fault (eFuse trip, overtemperature, overcurrent) to latch and be reported
+  rather than silently retried, so that I can decide when it is safe to re-enable power.</li>
+<li>As the <strong>OBC</strong>, I want to update PDU firmware without a risk of bricking the board, so that a bad image
+  cannot strand the mission with unswitchable power.</li>
+<li>As the <strong>OBC</strong>, I want the PDU to fail safe (disable <code>VOUT</code>) if it stops hearing valid Modbus traffic,
+  so that a lost or hung communications link cannot leave an output energized unsupervised.</li>
+<li>As a <strong>ground/bench technician</strong>, I want a local console with human-readable status and the same
+  command set the OBC uses, plus a few maintenance-only commands, so that I can bring up and troubleshoot
+  a unit without needing the OBC in the loop.</li>
+<li>As a <strong>ground/bench technician</strong>, I want to read the event log and reset-reason code, so that I can
+  diagnose an intermittent watchdog reset or fault after the fact.</li>
+</ul>
+<h2 id="modbus-rtu-interface">Modbus RTU interface</h2>
+<blockquote>
+<p><strong>Superseded.</strong> This is the original design draft. The implemented map is in <a href="../modbus_implementation/">Modbus RTU implementation</a>. Several addresses below differ from the firmware, and some are not implemented. Decided 2026-10-06: the implemented map is the reference. The differences are in <a href="../modbus_implementation/#design-differences">Design differences</a>.</p>
+</blockquote>
+<p>The currently implemented LED and TRANS register subset is documented in
+<a href="../modbus_implementation/">Modbus RTU implementation</a>. The map below is the wider design draft.</p>
+<p>Primary OBC control/telemetry channel, over RS-485 (<code>H1-37</code>/<code>H1-38</code>, <code>SRS-COM-002</code>/<code>003</code>). Slave address
+and baud rate are configurable (<code>SRS-CFG-060</code>) and take effect after reboot. All values below are the
+proposed default register map — draft, pending firmware sign-off (see <a href="../">Index</a>).</p>
+<p><strong>Supported function codes:</strong> <code>01</code> Read Coils, <code>02</code> Read Discrete Inputs, <code>03</code> Read Holding Registers,
+<code>04</code> Read Input Registers, <code>05</code> Write Single Coil, <code>06</code> Write Single Holding Register, <code>15</code> Write Multiple
+Coils, <code>16</code> Write Multiple Holding Registers.</p>
+<h3 id="coils-readwrite-fc-010515">Coils (read/write, FC 01/05/15)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Address</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;"><code>00001</code></td>
+<td><code>VOUT_ENABLE</code></td>
+<td>Enable/disable the <code>VOUT</code> rail (<code>UC-1</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>00002</code></td>
+<td><code>TRANS_BRANCH_ENABLE</code></td>
+<td>Enable/disable the <code>U1</code> transducer eFuse branch (<code>UC-2</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>00003</code></td>
+<td><code>CLEAR_FAULT_LATCH</code></td>
+<td>Clear a latched eFuse fault (<code>UC-4</code>). Refused while a fault input is active.</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>00004</code></td>
+<td><code>ENTER_BOOTLOADER</code></td>
+<td>Pulse to request bootloader entry (<code>UC-5</code>); forces <code>VOUT</code>/branch off first per <code>SRS-BOOT-076</code></td>
+</tr>
+</tbody>
+</table>
+<h3 id="discrete-inputs-read-only-fc-02">Discrete inputs (read-only, FC 02)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Address</th>
+<th>Name</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;"><code>10001</code></td>
+<td><code>EFUSE1_FAULT</code></td>
+<td>Transducer branch (<code>U1</code>) fault flag</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>10002</code></td>
+<td><code>EFUSE2_FAULT</code></td>
+<td>MCU branch (<code>U2</code>) fault flag — reportable only, not remediable (<code>SRS-PROT-024</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>10003</code></td>
+<td><code>OVER_TEMP_FLAG</code></td>
+<td>Board over-temperature flag</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>10004</code></td>
+<td><code>COMMS_WATCHDOG_TRIPPED</code></td>
+<td>Set if <code>VOUT</code> was auto-disabled by <code>SRS-COM-045</code> link-loss protection</td>
+</tr>
+</tbody>
+</table>
+<h3 id="input-registers-read-only-fc-04">Input registers (read-only, FC 04)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Address</th>
+<th>Name</th>
+<th>Units</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;"><code>30001</code></td>
+<td><code>VOUT_VOLTAGE_MV</code></td>
+<td>mV</td>
+<td>Measured <code>VOUT</code>, PAC1934 channel 1</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30002</code></td>
+<td><code>VOUT_CURRENT_MA</code></td>
+<td>mA</td>
+<td>Measured <code>VOUT</code> current</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30003</code></td>
+<td><code>VIN_VOLTAGE_MV</code></td>
+<td>mV</td>
+<td>Measured <code>+12</code> input</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30004</code></td>
+<td><code>VIN_CURRENT_MA</code></td>
+<td>mA</td>
+<td>Measured input current (<code>R51</code> shunt)</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30005</code></td>
+<td><code>V5TRANS_VOLTAGE_MV</code></td>
+<td>mV</td>
+<td>Measured <code>+5_TRANS</code></td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30006</code></td>
+<td><code>V5TRANS_CURRENT_MA</code></td>
+<td>mA</td>
+<td>Measured <code>+5_TRANS</code> current</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30007</code></td>
+<td><code>V5_VOLTAGE_MV</code></td>
+<td>mV</td>
+<td>Measured <code>+5</code> logic rail</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30008</code></td>
+<td><code>V5_CURRENT_MA</code></td>
+<td>mA</td>
+<td>Measured <code>+5</code> logic rail current</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30009</code></td>
+<td><code>BOARD_TEMP_C_X10</code></td>
+<td>°C ×10, signed</td>
+<td>Board temperature</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30010</code></td>
+<td><code>FW_VERSION</code></td>
+<td>packed major/minor</td>
+<td>Active bank's firmware version</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30011</code></td>
+<td><code>ACTIVE_BANK</code></td>
+<td>0=A, 1=B</td>
+<td>Currently running flash bank</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30012</code></td>
+<td><code>BANK_A_STATUS</code></td>
+<td>bitfield: valid, confirmed</td>
+<td>Bank A header status</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30013</code></td>
+<td><code>BANK_B_STATUS</code></td>
+<td>bitfield: valid, confirmed</td>
+<td>Bank B header status</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30014</code>–<code>30015</code></td>
+<td><code>UPTIME_SECONDS</code></td>
+<td>seconds, 32-bit</td>
+<td>Time since last reset</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30016</code></td>
+<td><code>RESET_REASON_CODE</code></td>
+<td>enum</td>
+<td>Power-on / external / watchdog / command (<code>SRS-WDT-081</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>30017</code></td>
+<td><code>SYSTEM_MODE</code></td>
+<td>enum</td>
+<td>Current mode per the Section 3 state machine in <a href="../software_requirements/#3-system-modes">Software requirements</a></td>
+</tr>
+</tbody>
+</table>
+<h3 id="holding-registers-readwrite-fc-030616">Holding registers (read/write, FC 03/06/16)</h3>
+<table>
+<thead>
+<tr>
+<th style="text-align: right;">Address</th>
+<th>Name</th>
+<th>Units</th>
+<th>Description</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align: right;"><code>40001</code></td>
+<td><code>VOUT_SETPOINT_MV</code></td>
+<td>mV</td>
+<td>Commanded <code>VOUT</code> (<code>UC-1</code>); rejected if out of calibrated range (<code>SRS-PWR-013</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40002</code></td>
+<td><code>VOUT_CURRENT_LIMIT_MA</code></td>
+<td>mA</td>
+<td>Firmware overcurrent threshold (<code>SRS-PROT-022</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40003</code></td>
+<td><code>OVER_TEMP_THRESHOLD_C</code></td>
+<td>°C</td>
+<td>Over-temperature protection threshold (<code>SRS-CFG-060</code>)</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40004</code></td>
+<td><code>COMMS_WATCHDOG_TIMEOUT_S</code></td>
+<td>s</td>
+<td>Link-loss timeout for <code>SRS-COM-045</code></td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40005</code></td>
+<td><code>MODBUS_SLAVE_ADDRESS</code></td>
+<td>—</td>
+<td>Effective after reboot</td>
+</tr>
+<tr>
+<td style="text-align: right;"><code>40006</code></td>
+<td><code>MODBUS_BAUD_CODE</code></td>
+<td>enum</td>
+<td>Effective after reboot</td>
+</tr>
+</tbody>
+</table>
+<h2 id="pc104-uart-and-console-command-reference">PC104 UART and console command reference</h2>
+<blockquote>
+<p><strong>Superseded.</strong> This is the original design draft. The implemented command set is in <a href="../command_reference/">Current command reference</a>. Most commands listed below are not implemented, and the firmware uses different names.</p>
+</blockquote>
+<p>The implemented ASCII commands, example requests, and exact reply text are listed in
+<a href="../command_reference/">Current text command reference</a>. UART0 and the local software
+UART currently accept the same command table. The proposed additional commands in
+the software requirements are not implemented yet.</p>
+<h2 id="implementation-status">Implementation status</h2>
+<p>Status as of 2026-10-05. Legend as in <a href="../software_requirements/#7-implementation-status">Software requirements §7</a>.</p>
+<table>
+<thead>
+<tr>
+<th>Item</th>
+<th>Status</th>
+<th>Note</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>UC-1</code> Set variable output voltage</td>
+<td>Implemented</td>
+<td>Set and read over Modbus 40001 (commanded setpoint, from system data). Measured VOUT is on input 30024. A readback mismatch is flagged (WARNING, SRS-PWR-014).</td>
+</tr>
+<tr>
+<td><code>UC-2</code> Enable/disable transducer branch</td>
+<td>Implemented</td>
+<td>Modbus coil 00002 and <code>trans on</code>/<code>trans off</code>.</td>
+</tr>
+<tr>
+<td><code>UC-3</code> Read telemetry</td>
+<td>Implemented</td>
+<td>The setpoint, the four rails' voltage and current, and the four rails' power are on Modbus <code>30023</code>–<code>30038</code> and in the <code>telemetry</code> command. Power is in 10 mW units. Board temperature is available through <code>temp</code> and Modbus input <code>30021</code>.</td>
+</tr>
+<tr>
+<td><code>UC-4</code> Handle a protection fault</td>
+<td>Implemented</td>
+<td>Confirmed eFuse faults latch and enter ERROR outside MANUAL; in MANUAL they are reported without a software output shutdown. Over-temperature and overcurrent in NORMAL turn outputs off and enter ERROR. Limits are set with <code>limit</code> or Modbus <code>40031</code>–<code>40033</code>. A stored limit ERROR clears on a healthy <code>mode normal</code> request; an eFuse latch requires <code>fault clear</code>. Thresholds need bench confirmation.</td>
+</tr>
+<tr>
+<td><code>UC-5</code> Update firmware</td>
+<td>Pending</td>
+<td>No bootloader.</td>
+</tr>
+<tr>
+<td><code>UC-6</code> Local diagnostics</td>
+<td>Partial</td>
+<td><code>status</code>, the time-stamped event log, boot history, and I2C/EEPROM tools exist. No state forcing.</td>
+</tr>
+<tr>
+<td><code>UC-7</code> Recover from a hang</td>
+<td>Partial</td>
+<td>TPL5010 reset works. The cause and boot count are recorded in internal EEPROM and shown by <code>bootinfo</code>.</td>
+</tr>
+<tr>
+<td><code>UC-8</code> Power-up sequencing</td>
+<td>Implemented</td>
+<td>Self-test runs at startup. Starts in NORMAL with both outputs off. A missing regulator is ERROR.</td>
+</tr>
+</tbody>
+</table>
+<table>
+<thead>
+<tr>
+<th>User story</th>
+<th>Status</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>OBC sets VOUT and reads back voltage and current</td>
+<td>Implemented. VOUT voltage and current are on Modbus <code>30024</code>–<code>30025</code>, and VOUT power on <code>30035</code>.</td>
+</tr>
+<tr>
+<td>Transducer branch and VOUT default to disabled after reset</td>
+<td>Implemented for TRANS. VOUT follows TRANS.</td>
+</tr>
+<tr>
+<td>Fault latches and is reported, not retried</td>
+<td>Implemented for eFuse faults. Reported on Modbus and the console.</td>
+</tr>
+<tr>
+<td>Firmware update without bricking</td>
+<td>Pending</td>
+</tr>
+<tr>
+<td>VOUT disabled when Modbus traffic is lost</td>
+<td>Implemented. Outputs turn off after the configured timeout (default 5 s) without a request. The mode is unchanged.</td>
+</tr>
+<tr>
+<td>Technician console with the same commands plus maintenance</td>
+<td>Partial</td>
+</tr>
+<tr>
+<td>Reset-reason code</td>
+<td>Implemented. Shown by <code>bootinfo</code>.</td>
+</tr>
+<tr>
+<td>Event log</td>
+<td>Partial. Limit, I2C, setpoint, configuration, and clock events, time-stamped and readable over Modbus. Faults, modes, and resets are not logged yet.</td>
+</tr>
+</tbody>
+</table>
+<h2 id="superseded-sections">Superseded sections</h2>
+<p>The Modbus register map and the command reference below are the <strong>original design draft</strong>. They are kept as the design record. For what the firmware implements, use:</p>
+<ul>
+<li><a href="../modbus_implementation/">Modbus RTU implementation</a></li>
+<li><a href="../command_reference/">Current command reference</a></li>
+</ul>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href="../software_requirements/" class="btn btn-neutral float-left" title="Software requirements"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../modbus_implementation/" class="btn btn-neutral float-right" title="Modbus RTU implementation">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href="../software_requirements/" style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../modbus_implementation/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../javascripts/mermaid.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>

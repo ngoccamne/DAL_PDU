@@ -1,0 +1,6 @@
+[submodule "firmware/DAL_PDU/DAL_PDU/src/dev/M4_MiddleWare/ThirdParty/freemodbus"]
+    path = firmware/DAL_PDU/DAL_PDU/src/dev/M4_MiddleWare/ThirdParty/freemodbus
+    url = https://github.com/cwalter-at/freemodbus.git
+[submodule "firmware/DAL_PDU/DAL_PDU/src/dev/M4_MiddleWare/ThirdParty/printf"]
+    path = firmware/DAL_PDU/DAL_PDU/src/dev/M4_MiddleWare/ThirdParty/printf
+    url = https://github.com/mpaland/printf

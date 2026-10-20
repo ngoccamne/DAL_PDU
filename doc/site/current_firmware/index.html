@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+      <link rel="shortcut icon" href="../img/favicon.ico" />
+    <title>Current firmware architecture - DAL_PDU Software Design</title>
+    <link rel="stylesheet" href="../css/theme.css" />
+    <link rel="stylesheet" href="../css/theme_extra.css" />
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css" />
+    
+      <script>
+        // Current page data
+        var mkdocs_page_name = "Current firmware architecture";
+        var mkdocs_page_input_path = "current_firmware.md";
+        var mkdocs_page_url = null;
+      </script>
+    
+    <!--[if lt IE 9]>
+      <script src="../js/html5shiv.min.js"></script>
+    <![endif]-->
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"></script>
+      <script>hljs.highlightAll();</script> 
+</head>
+
+<body class="wy-body-for-nav" role="document">
+
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side stickynav">
+    <div class="wy-side-scroll">
+      <div class="wy-side-nav-search">
+          <a href=".." class="icon icon-home"> DAL_PDU Software Design
+        </a><div role="search">
+  <form id ="rtd-search-form" class="wy-form" action="../search.html" method="get">
+      <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" title="Type search term here" />
+  </form>
+</div>
+      </div>
+
+      <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="..">Overview</a>
+                </li>
+              </ul>
+              <ul class="current">
+                <li class="toctree-l1 current"><a class="reference internal current" href="#">Current firmware architecture</a>
+    <ul class="current">
+    <li class="toctree-l2"><a class="reference internal" href="#target-and-entry-point">Target and entry point</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#layers">Layers</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#scheduled-work">Scheduled work</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#interfaces">Interfaces</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#power-path">Power path</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#build-and-tests">Build and tests</a>
+    </li>
+    <li class="toctree-l2"><a class="reference internal" href="#versioning-and-release">Versioning and release</a>
+    </li>
+    </ul>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../code_architecture/">Code architecture</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../scheduler_design/">Scheduler design</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../command_reference/">Current command reference</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../hardware_overview/">Hardware overview</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../software_requirements/">Software requirements</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../use_cases_commands/">Use cases, user stories & commands</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../modbus_implementation/">Modbus RTU implementation</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../open_issues/">Open issues</a>
+                </li>
+              </ul>
+              <ul>
+                <li class="toctree-l1"><a class="reference internal" href="../mode_state_machine/">Mode state machine</a>
+                </li>
+              </ul>
+              <p class="caption"><span class="caption-text">Code Implementation</span></p>
+              <ul>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/versioning/">Versioning</a>
+                  </li>
+                  <li class="toctree-l1"><a class="reference internal" href="../code_implementation/unit_tests/">Unit tests</a>
+                  </li>
+              </ul>
+      </div>
+    </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+      <nav class="wy-nav-top" role="navigation" aria-label="Mobile navigation menu">
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="..">DAL_PDU Software Design</a>
+        
+      </nav>
+      <div class="wy-nav-content">
+        <div class="rst-content"><div role="navigation" aria-label="breadcrumbs navigation">
+  <ul class="wy-breadcrumbs">
+    <li><a href=".." class="icon icon-home" aria-label="Docs"></a></li>
+      <li class="breadcrumb-item active">Current firmware architecture</li>
+    <li class="wy-breadcrumbs-aside">
+    </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+            <div class="section" itemprop="articleBody">
+              
+                <h1 id="current-firmware-architecture">Current firmware architecture</h1>
+<p>This is the short overview of the DAL_PDU firmware. The detail lives in two pages:</p>
+<ul>
+<li><a href="../code_architecture/">Code architecture</a>: layers, dependencies, data flows, task inventory, shared state.</li>
+<li><a href="../scheduler_design/">Scheduler design</a>: the task model, API, timing, concurrency rules, and limits.</li>
+</ul>
+<h2 id="target-and-entry-point">Target and entry point</h2>
+<p>The Atmel Studio project is <code>PDU/firmware/DAL_PDU/DAL_PDU/</code> and targets the ATmega128A at 12 MHz.
+<code>main.c</code> calls <code>APP_Main()</code> in <code>src/dev/M0_App/app_main.c</code>, which initializes everything and then runs
+the main loop, which only dispatches <code>SCH_HandleScheduledTask()</code>. Modbus runs as a 5 ms task.</p>
+<h2 id="layers">Layers</h2>
+<table>
+<thead>
+<tr>
+<th>Layer</th>
+<th>Responsibility</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>M0_App</code></td>
+<td>Startup, console, heartbeat LED, TRANS and fault handling, rail monitoring, watchdog supervision, Modbus callbacks.</td>
+</tr>
+<tr>
+<td><code>M1_Sys</code></td>
+<td><code>Scheduler</code> (1 ms tick and task dispatch), <code>CommandLine</code> (parser and handlers), <code>SystemData</code> (shared status).</td>
+</tr>
+<tr>
+<td><code>M2_BSP</code></td>
+<td>Board pin map, UART ownership, timer ISR, I2C, power GPIO, watchdog, Modbus port, chip bindings.</td>
+</tr>
+<tr>
+<td><code>M3_Driver</code></td>
+<td>Component drivers (UART, software UART, I2C, GPIO) and chip drivers (TPS55287, PAC1934, 24C04).</td>
+</tr>
+<tr>
+<td><code>M4_MiddleWare</code></td>
+<td>Byte FIFO, printf hook, FreeMODBUS (submodule).</td>
+</tr>
+</tbody>
+</table>
+<h2 id="scheduled-work">Scheduled work</h2>
+<p>Seven tasks run from the main loop, driven by a 1 ms Timer0 tick: console (10 ms), heartbeat (20 ms),
+TRANS fault check (6 ms), Modbus (5 ms), rail monitor (1000 ms), watchdog (10 ms), and board temperature (1000 ms). The full inventory, with phases
+and what each task reads and writes, is in <a href="../code_architecture/#4-task-inventory">Code architecture §4</a>.</p>
+<h2 id="interfaces">Interfaces</h2>
+<ul>
+<li><strong>UART0 (PE0/PE1)</strong> and the <strong>software console (PE3/PE4)</strong> both run at 9600 baud and share one command
+  table. Each port has its own line buffer, and replies go back to the port that sent the command.
+  See <a href="../command_reference/">Current command reference</a>.</li>
+<li><strong>Modbus RTU</strong> runs as the configured slave (default 1) at the configured baud (default 9600) on USART1 (PD2/PD3, RS485 direction on PD5). See
+  <a href="../modbus_implementation/">Modbus RTU implementation</a>.</li>
+<li><strong>I2C</strong> on PD0/PD1 serves the TPS55287 (VOUT), the PAC1934 monitor, and the 24C04 EEPROM.</li>
+</ul>
+<h2 id="power-path">Power path</h2>
+<p>TRANS is switched by the active-low PC2 eFuse. VOUT is enabled only while TRANS is on and both fault
+inputs are clear. A fault turns VOUT off first, then TRANS. The fault stays latched in internal EEPROM until it is cleared by command. The PAC1934 task records voltage, current,
+and power for VOUT, +12, +5_TRANS, and +5, but it does not yet enforce setpoint agreement or overcurrent
+limits.</p>
+<p>The mode (NORMAL, MANUAL, WARNING, or ERROR) gates TRANS. A missing regulator, or a limit trip in NORMAL, is ERROR. An unreadable PAC1934 or a latched fault is WARNING. Running drops outputs to off after 5 seconds without a Modbus request. See <a href="../mode_state_machine/">Mode state machine</a>.</p>
+<h2 id="build-and-tests">Build and tests</h2>
+<p>Open <code>DAL_PDU.atsln</code> in Atmel Studio 7 for the AVR build. From <code>SOFTWARE</code>, run
+<code>make -C PDU/tests test</code> for the host unit tests. Host tests do not replace bench checks of serial
+timing, output voltage, or fault wiring.</p>
+<h2 id="versioning-and-release">Versioning and release</h2>
+<p>The version and the build identity are described on the <a href="../code_implementation/versioning/">Versioning</a> page under Code Implementation.</p>
+              
+            </div>
+          </div><footer>
+    <div class="rst-footer-buttons" role="navigation" aria-label="Footer Navigation">
+        <a href=".." class="btn btn-neutral float-left" title="Overview"><span class="icon icon-circle-arrow-left"></span> Previous</a>
+        <a href="../code_architecture/" class="btn btn-neutral float-right" title="Code architecture">Next <span class="icon icon-circle-arrow-right"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <!-- Copyright etc -->
+  </div>
+
+  Built with <a href="https://www.mkdocs.org/">MkDocs</a> using a <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a> provided by <a href="https://readthedocs.org">Read the Docs</a>.
+</footer>
+          
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+
+  <div class="rst-versions" role="note" aria-label="Versions">
+  <span class="rst-current-version" data-toggle="rst-current-version">
+    
+    
+      <span><a href=".." style="color: #fcfcfc">&laquo; Previous</a></span>
+    
+    
+      <span><a href="../code_architecture/" style="color: #fcfcfc">Next &raquo;</a></span>
+    
+  </span>
+</div>
+    <script src="../js/jquery-3.6.0.min.js"></script>
+    <script>var base_url = "..";</script>
+    <script src="../js/theme_extra.js"></script>
+    <script src="../js/theme.js"></script>
+      <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+      <script src="../javascripts/mermaid.js"></script>
+      <script src="../search/main.js"></script>
+    <script>
+        jQuery(function () {
+            SphinxRtdTheme.Navigation.enable(true);
+        });
+    </script>
+
+</body>
+</html>
